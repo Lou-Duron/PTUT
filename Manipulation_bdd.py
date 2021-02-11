@@ -1,6 +1,6 @@
 #coding:utf-8
 
-#Attention a l'historique
+#Attention a l'historiquequeque
 
 import mysql.connect as mc
 
