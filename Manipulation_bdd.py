@@ -1,4 +1,7 @@
 #coding:utf-8
+
+#Attention a l'historique
+
 import mysql.connect as mc
 
 try:
