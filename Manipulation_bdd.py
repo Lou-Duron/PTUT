@@ -1,7 +1,5 @@
-#coding:utf-8
-
-
-#Attention a l'historiquequeque joietsrfeshfus
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import mysql.connect as mc
 
