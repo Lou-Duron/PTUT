@@ -17,7 +17,7 @@ parser.add_argument('--outfile', '-o', dest="out_file", type=str,
                     help="csv(or tsv) file containing ... to fill")
 
 
-# arser.add_argument('--verbose', '-v', action="store_true", default=False,
+# parser.add_argument('--verbose', '-v', action="store_true", default=False,
 #                    help="le fichier au format fasta à lire")
 
 args = parser.parse_args()
@@ -33,8 +33,11 @@ args = parser.parse_args()
 # Necessity to associate each protein to its associated cog. 
 
 
+y = []
 with open(args.heli_file, "r") as fh:  # reading tsv entry file using args module
     tsv = csv.reader(fh, delimiter="\t")
+    for lines in tsv:
+        y.append(lines)
 
     with open(args.out_file, "w") as fh2:  # openning writing file
         csv_writer = csv.writer(fh2, delimiter="\t")
@@ -42,3 +45,4 @@ with open(args.heli_file, "r") as fh:  # reading tsv entry file using args modul
         for line in tsv:
             csv_writer.writerow(line)
 
+print(y)
