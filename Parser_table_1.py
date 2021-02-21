@@ -36,13 +36,11 @@ args = parser.parse_args()
 y = []
 with open(args.heli_file, "r") as fh:  # reading tsv entry file using args module
     tsv = csv.reader(fh, delimiter="\t")
-    for lines in tsv:
-        y.append(lines)
 
     with open(args.out_file, "w") as fh2:  # openning writing file
         csv_writer = csv.writer(fh2, delimiter="\t")
 
         for line in tsv:
+            print(line)
             csv_writer.writerow(line)
 
-print(y)
