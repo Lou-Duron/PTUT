@@ -5,8 +5,6 @@ import argparse
 import csv
 import urllib.parse
 import urllib.request
-import re
-
 
 """
 The purpose of this file is to convert your tsv file containing proteins ids (uniprot) into the same file containing
@@ -34,12 +32,13 @@ dico_helicase = {}
 with open(args.heli_file, "r") as fh:  # reading tsv entry file using args module
     tsv = csv.reader(fh, delimiter="\t")
     for line in tsv:
-        if line[0] not in dico_helicase:
+        if line[1] not in list(dico_helicase.values()):  # Check if the protein is not
             dico_helicase[line[0]] = line[1]  # Adding each line into a dictionary containing the organism id in key and
             # the protein id for value. This is collected from the helicase file we've had from Petra.
 
+print(dico_helicase)
 
-dico_eggnog = {}
+
 list_eggnog = []
 list_of_list = []
 
@@ -58,27 +57,24 @@ with open(args.out_file, "w") as fh2:  # openning writing file
         with urllib.request.urlopen(req) as f:
             response = f.read()
 
-        list_eggnog.append((response.decode('utf-8').split('\t')[2])[:-2])
+        list_eggnog.append((response.decode('utf-8').split('\t')[2])[:-2])  # if you want to understand this, try this :
+        # test_list = []
+        # test_list.append(response.decode('utf-8'))
+        # print(test_list)
         list_eggnog.append(value)
-        list_of_list.append(list_eggnog)
+
+        list_of_list.append(list_eggnog)  # Creating a list of list, each list within the list of list contains the
+        # returned arcog associated to value ( = protein id ) and the  value ( = protein id )
 
         list_eggnog = []
-
-        dico_eggnog[value] = response.decode('utf-8').split('\t')[2]
 
     for el in list_of_list:
         print(el)
         csv_writer.writerow(el)
 
-
-
-
-
         #csv_writer.writerow(response.decode('utf-8'))
 
 print(list_of_list)
-
-
 
 """
 Update, where i am :
