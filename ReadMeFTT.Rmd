@@ -1,0 +1,51 @@
+---
+title: "ReadMe For the Team"
+output:
+  html_document:
+    code_folding: show
+    toc: TRUE
+    toc_float: TRUE
+    toc_depth: 4
+    theme: paper
+    highlight: tango
+editor_options: 
+  chunk_output_type: console
+---
+
+
+This document is for team and explain steps to install or use libraries.<br>
+Feel free to correct any mistake or add solutions for any encountered problems. <br>
+Don't forget: with "history" command you can retrieve the old commands you've typed. <br>
+
+# Recommandations for the Read Me Client
+For the readme_client don't forget to put the version of the library or anything you use and if relevant add the commands/the steps/documentation to properly use them. 
+
+For the commands, I recommand to put them on a chunk to conserve structure. To avoid execution of the chunk put "{r, eval = FALSE}" in the header of the chunk like so: 
+
+```{r, eval = FALSE}
+blabla
+```
+
+
+# Data Base 
+For the database, table names as well as attributes names are available on the google docs
+Note: the "type" attribute (associated with the COG table) has been replaced by "category" since it's a reserved keyword <br>
+(see here: https://stackoverflow.com/questions/15150798/is-type-a-reserved-word-in-mysql) <br>
+Same for "status" in the same table. 
+
+To install mysql see the steps here: https://tecadmin.net/install-mysql-8-on-fedora/
+Becareful there is a temporary password, you need to configure your own password after installation. <br> **DO NOT USE THE SAME PASSWORD FOR YOU COMPUTER (sudo command) AND MYSQL**
+for security reason.
+
+
+If you forgot the temporary password don't panic: here is how to retrieve it: 
+
+```{r, eval = FALSE}
+ sudo grep 'temporary password' /var/log/mysqld.log
+```
+
+To execute mysql in the shell
+```{r, eval = FALSE}
+mysql -u root -p
+```
+

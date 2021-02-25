@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import mysql.connector as mc
-" My Sql conenctor library may require configuration of environment to solve Library dependencies. In this project a conda environment was used with the following commands
-conda create -n project name
-conda install -c anaconda mysql-connector-python
+" My Sql conenctor library may require configuration of environment to solve Library dependencies.
+see ReadMe
 "
 
 # Insertion for table x linking proteins classed in multiple orthologs groups

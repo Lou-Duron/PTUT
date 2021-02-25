@@ -1,0 +1,27 @@
+---
+title: "ReadMe for users - Archeal Helicases Project"
+output:
+  html_document:
+    code_folding: show
+    toc: TRUE
+    toc_float: TRUE
+    toc_depth: 4
+    theme: paper
+    highlight: tango
+editor_options: 
+  chunk_output_type: console
+---
+
+# Installation needed for the pipeline 
+
+For this project the following libraries are needed: 
+- mysql-connector-python version: 8.0.18 (used with python 3.8)
+
+mysql.conenctor library may require configuration of environment to solve Library dependencies. In this project a conda environment was used with the following commands in the shell: 
+
+```{r, eval = FALSE}
+conda create -n project name
+conda install -c anaconda mysql-connector-python
+```
+
+
