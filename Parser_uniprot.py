@@ -45,11 +45,12 @@ list_of_list = []
 with open(args.out_file, "w") as fh2:  # openning writing file
     csv_writer = csv.writer(fh2, delimiter="\t")
 
-    for value in dico_helicase.values():  # for each value in the dict, search corresponding eggnog
+    for key in dico_helicase.keys():  # for each key in the dict, search corresponding eggnog to the value of the key
         url = 'https://www.uniprot.org/uploadlists/'  # from here to the "response.decode('utf-8') it's a code i got
         # from https://www.uniprot.org/help/api_idmapping.
 
-        params = {'from': 'ACC', 'to': 'EGGNOG_ID', 'format': 'tab', 'query': value}  # query = values in the dico_helic
+        params = {'from': 'ACC', 'to': 'EGGNOG_ID', 'format': 'tab', 'query': dico_helicase[key]}  # query = values in
+        # the dico_helic
 
         data = urllib.parse.urlencode(params)
         data = data.encode('utf-8')
@@ -57,35 +58,27 @@ with open(args.out_file, "w") as fh2:  # openning writing file
         with urllib.request.urlopen(req) as f:
             response = f.read()
 
+        list_eggnog.append(key)
+        list_eggnog.append(dico_helicase[key])
         list_eggnog.append((response.decode('utf-8').split('\t')[2])[:-2])  # if you want to understand this, try this :
         # test_list = []
         # test_list.append(response.decode('utf-8'))
         # print(test_list)
-        list_eggnog.append(value)
+
 
         list_of_list.append(list_eggnog)  # Creating a list of list, each list within the list of list contains the
         # returned arcog associated to value ( = protein id ) and the  value ( = protein id )
 
-        list_eggnog = []
+        list_eggnog = []  # empty the list to fill it with the next values.
 
     for el in list_of_list:
         print(el)
-        csv_writer.writerow(el)
+        csv_writer.writerow(el)  # writing all the lists in the list by rows
 
-        #csv_writer.writerow(response.decode('utf-8'))
 
 print(list_of_list)
 
 """
-Update, where i am :
-argparse : entry file is the tsv file from petra, correctly read no problem for that, maybe i'll have to read and write
-at the same time to avoid creating a big dict but the dict is really read really fast so we will see.
-The outfile is not ready yet. I managed to have eggnog id from protein id ( petra's file ) but the page setting is not 
-correct
-
-edit : I think that everything is correct in therm of page setting ( just change what will be in the outfile ( missing 
-things ).
-
-what's next ? first clear code from unsed lines and add things to the outfile. Correct all remarks and comments that 
-have been corrected
+What's next ? Integrate mysql to python in order to write the right lines and add missing informations needed in the 
+tables
 """
