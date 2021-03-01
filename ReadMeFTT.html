@@ -1770,11 +1770,20 @@ div.tocify {
 <div id="data-base" class="section level1">
 <h1>Data Base</h1>
 <p>For the database, table names as well as attributes names are available on the google docs Note: the “type” attribute (associated with the COG table) has been replaced by “category” since it’s a reserved keyword <br> (see here: <a href="https://stackoverflow.com/questions/15150798/is-type-a-reserved-word-in-mysql" class="uri">https://stackoverflow.com/questions/15150798/is-type-a-reserved-word-in-mysql</a>) <br> Same for “status” in the same table.</p>
-<p>To install mysql see the steps here: <a href="https://tecadmin.net/install-mysql-8-on-fedora/" class="uri">https://tecadmin.net/install-mysql-8-on-fedora/</a> Becareful there is a temporary password, you need to configure your own password after installation. <br> <strong>DO NOT USE THE SAME PASSWORD FOR YOU COMPUTER (sudo command) AND MYSQL</strong> for security reason.</p>
+<p>To install mysql see the steps here: <a href="https://tecadmin.net/install-mysql-8-on-fedora/" class="uri">https://tecadmin.net/install-mysql-8-on-fedora/</a> Be careful there is a temporary password, you need to configure your own password after installation. <br> <strong>DO NOT USE THE SAME PASSWORD FOR YOU COMPUTER (sudo command) AND MYSQL</strong> for security reason.</p>
 <p>If you forgot the temporary password don’t panic: here is how to retrieve it:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a> sudo grep <span class="st">&#39;temporary password&#39;</span> <span class="op">/</span>var<span class="op">/</span>log<span class="op">/</span>mysqld.log</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>sudo grep <span class="st">&#39;temporary password&#39;</span> <span class="op">/</span>var<span class="op">/</span>log<span class="op">/</span>mysqld.log</span></code></pre></div>
 <p>To execute mysql in the shell</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>mysql <span class="op">-</span>u root <span class="op">-</span>p</span></code></pre></div>
+</div>
+<div id="how-to-connect-to-your-local-database-without-changing-password-in-the-shared-.py" class="section level1">
+<h1>How to connect to your local database without changing password in the shared .py</h1>
+<p>The idea is to create a python file <strong>that you won’t share</strong> (already in the .gitignore file) with variables containing our own password. Once created you import this file in the shared python file (and so you import your password but hidden in the variable) and use those variables. To make it work you need to use the same name for the variables and the file’s name as all the users (so us) !</p>
+<p>Here the procedure step by step:</p>
+<p>You need to create a directory called “configurations” <br> Then in this directory create a file called config.py <br> Then open this file and complete the following code <br></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>BD_USER =<span class="st"> &quot;yourusername&quot;</span> <span class="co">#Probably root</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>BD_PASSWORD =<span class="st"> &quot;yourpassword&quot;</span> <span class="co">#mysql password (the one you configure)</span></span></code></pre></div>
+<p>Test if it works by executing the Data_Treatment.py file</p>
 </div>
 
 

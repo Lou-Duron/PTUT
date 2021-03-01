@@ -1,2 +1,5 @@
 .vscode/*
 .Rhistory
+configurations/*
+__pycache__/*
+
