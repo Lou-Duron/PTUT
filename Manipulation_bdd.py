@@ -1,25 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import mysql.connect as mc
+import mysql.connector as mc
+import csv
 
 try:
-    conn = mc.connect(host = '', database = '', user = '', password='')
+    conn = mc.connect(host = 'localhost',
+    database = 'ptut', 
+    user = 'root', 
+    password='rootroot')
+    
     cursor = conn.cursor()
 
-    req = 'SELECT * FROM archee' #exemple requete
-    cursor.execute(req)
+    cursor.execute("CREATE TABLE IF NOT EXISTS `PROTEINS_COG`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),PRIMARY KEY(`id_uniprot`, `id_cog`));")
 
-    ins = "INSERT INTO archee VALUES (%s, %s, %s)" # exemple insertion
-    val = ('exid', 'extruc', 85) # insertion d'un archee
+    cursor.execute("CREATE TABLE IF NOT EXISTS `COG`(`id_cog` VARCHAR(30) UNIQUE, `description` VARCHAR(100), `category` VARCHAR(30), `species_count` VARCHAR(10), `proteins_count` VARCHAR(10),PRIMARY KEY(`id_cog`));")
 
-    cursor.execute(ins, val)
-    conn.commit #commit
+    cursor.execute("CREATE TABLE IF NOT EXISTS `MULTIPLE_STATUS`(`client_id` VARCHAR(30), `id_uniprot`VARCHAR(30), `multiple`VARCHAR(30), `predicted_by`VARCHAR(30), PRIMARY KEY(`client_id`));")
 
-    archeelist = cursor.fetchall()
+    with open("uniprot_eggnog.Nov2018.tsv", "r") as fh:  
+        tsv = csv.reader(fh, delimiter="\t")
+        for ligne in tsv:
+            if len(ligne[1]) < 100:
+                cursor.execute("INSERT INTO PROTEINS_COG (id_uniprot, id_cog) VALUES (%s,%s)", (ligne[0], ligne[1]))
 
-    for arche in archeelist:
-        print('Identifiant : {}'.format(archee[0]))
+            
+    conn.commit()
 
 except mc.Error as err: # si la connexion échoue
     print(err)
