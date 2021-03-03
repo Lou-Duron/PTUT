@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS PROTEINS_COG
      PRIMARY KEY(`id_uniprot`, `id_cog`)
 );
 
-
 CREATE TABLE IF NOT EXISTS COG(
     `id_cog` VARCHAR(30) UNIQUE,
     `description` VARCHAR(100),

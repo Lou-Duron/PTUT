@@ -34,18 +34,34 @@ Note: the "type" attribute (associated with the COG table) has been replaced by 
 Same for "status" in the same table. 
 
 To install mysql see the steps here: https://tecadmin.net/install-mysql-8-on-fedora/
-Becareful there is a temporary password, you need to configure your own password after installation. <br> **DO NOT USE THE SAME PASSWORD FOR YOU COMPUTER (sudo command) AND MYSQL**
+Be careful there is a temporary password, you need to configure your own password after installation. <br> **DO NOT USE THE SAME PASSWORD FOR YOU COMPUTER (sudo command) AND MYSQL**
 for security reason.
 
 
 If you forgot the temporary password don't panic: here is how to retrieve it: 
 
 ```{r, eval = FALSE}
- sudo grep 'temporary password' /var/log/mysqld.log
+sudo grep 'temporary password' /var/log/mysqld.log
 ```
 
 To execute mysql in the shell
 ```{r, eval = FALSE}
 mysql -u root -p
 ```
+
+# How to connect to your local database without changing password in the shared .py
+The idea is to create a python file **that you won't share** (already in the .gitignore file) with variables containing our own password.
+Once created you import this file in the shared python file (and so you import your password but hidden in the variable) and use those variables. To make it work you need to use the same name for the variables and the file's name as all the users (so us) !
+
+Here the procedure step by step: 
+
+You need to create a directory called "configurations" <br>
+Then in this directory create a file called config.py <br>
+Then open this file and complete the following code <br>
+```{r, eval = FALSE}
+BD_USER = "yourusername" #Probably root
+BD_PASSWORD = "yourpassword" #mysql password (the one you configure)
+```
+Test if it works by executing the Data_Treatment.py file 
+
 
