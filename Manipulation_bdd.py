@@ -3,14 +3,6 @@
 
 import mysql.connector as mc
 import csv
-<<<<<<< HEAD
-from configurations import config
-try:
-    conn = mc.connect(host = 'localhost',
-    database = 'ptut', 
-    user = 'root', 
-    password=config.BD_PASSWORD)
-=======
 from configuration import config
 
 
@@ -19,7 +11,6 @@ try:
     database = 'ptut', 
     user = config.BD_USER, 
     password= config.BD_PASSWORD)
->>>>>>> 5e962c360d7861a7e08d2e53008eb0f1f854e8b0
     
     cursor = conn.cursor()
 
@@ -37,9 +28,10 @@ try:
     with open("/home/lou/Master/PTUT/ptut_helicases/data/uniprot_eggnog.Nov2018.tsv", "r") as fh: # a mettre en argument 
         tsv = csv.reader(fh, delimiter="\t")
         for ligne in tsv:
-            print(ligne)
-            if len(ligne[1]) < 100:
-                cursor.execute("INSERT INTO PROTEINS_COG (id_uniprot, id_cog) VALUES (%s,%s)", (ligne[0], ligne[1]))
+            cog_id = ligne[1].split(",")
+            print(cog_id)
+            for id in len(cog_id):
+                cursor.execute("INSERT INTO PROTEINS_COG (id_uniprot, id_cog) VALUES (%s,%s)", (ligne[0], id))
 
             
     conn.commit()
