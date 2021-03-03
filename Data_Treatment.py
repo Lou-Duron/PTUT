@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import mysql.connector as mc
-" My Sql conenctor library may require configuration of environment to solve Library dependencies.
+""" My Sql conenctor library may require configuration of environment to solve Library dependencies.
 see ReadMe
-"
+"""
 
 # Insertion for table x linking proteins classed in multiple orthologs groups
 try:
@@ -15,6 +15,5 @@ try:
     cursor.execute(req)
 
 # Count of proteins and species for each ortholgs group (cogs) 
-"""
-Need of a table linking species to Id_prot 
-"""
+#Need of a table linking species to Id_prot 
+
