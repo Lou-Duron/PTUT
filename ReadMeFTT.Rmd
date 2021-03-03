@@ -60,7 +60,7 @@ Then in this directory create a file called config.py <br>
 Then open this file and complete the following code <br>
 ```{r, eval = FALSE}
 BD_USER = "yourusername" #Probably root
-BD_PASSWORD = "yourpassword" #mysql password (the one you configure)
+BD_PASSWORD = "yourpassword" #mysql password (the one you configured)
 ```
 Test if it works by executing the Data_Treatment.py file 
 

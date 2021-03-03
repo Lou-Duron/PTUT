@@ -3,12 +3,12 @@
 
 import mysql.connector as mc
 import csv
-
+from configurations import config
 try:
     conn = mc.connect(host = 'localhost',
     database = 'ptut', 
     user = 'root', 
-    password='rootroot')
+    password=config.BD_PASSWORD)
     
     cursor = conn.cursor()
 
