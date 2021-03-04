@@ -39,7 +39,7 @@ def conversion(initial, start='ACC', end='EGGNOG_ID'):
     result = re.findall("\t(\w{3,})\n", response.decode('utf-8'))
 
     return result
-
+###############################################################################################
 
 try:
     # Connection à la base de donnée
