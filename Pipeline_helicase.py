@@ -8,6 +8,9 @@ from configurations import config
 import urllib.parse
 import urllib.request
 import re
+import certifi
+import ssl
+
 
 ################################################################################################
 parser = argparse.ArgumentParser(description='') 
@@ -24,16 +27,14 @@ args = parser.parse_args()
 
 
 def conversion(initial, start='ACC', end='EGGNOG_ID'):
-
     url = 'https://www.uniprot.org/uploadlists/'  # from here to the "response.decode('utf-8') it's a code i got
     # from https://www.uniprot.org/help/api_idmapping.
-
     params = {'from': start, 'to': end, 'format': 'tab', 'query': initial}
 
     data = urllib.parse.urlencode(params)
     data = data.encode('utf-8')
     req = urllib.request.Request(url, data)
-    with urllib.request.urlopen(req) as f:
+    with urllib.request.urlopen(req, context=ssl.create_default_context(cafile=certifi.where())) as f:
         response = f.read()
 
     result = re.findall("\t(\w{3,})\n", response.decode('utf-8'))

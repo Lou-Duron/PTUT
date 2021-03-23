@@ -65,3 +65,35 @@ BD_PASSWORD = "yourpassword" #mysql password (the one you configured)
 Test if it works by executing the Data_Treatment.py file 
 
 
+# SSL Problem
+https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error
+
+To do requests on the database we need a SSL certificate.An SSL certificate is a type of digital certificate that provides authentication for a website and enables an encrypted connection. To provide this certificate here is the answer found on stack overflow (it's not the first one).
+
+"I was having a similar problem, though I was using urllib.request.urlopen in Python 3.4, 3.5, and 3.6. (This is a portion of the Python 3 equivalent of urllib2, per the note at the head of Python 2's urllib2 documentation page.)
+
+My solution was to pip install certifi to install certifi, which has:
+
+... a carefully curated collection of Root Certificates for validating the trustworthiness of SSL certificates while verifying the identity of TLS hosts.
+
+Then, in my code where I previously just had:
+
+import urllib.request as urlrq
+
+resp = urlrq.urlopen('https://example.com/bar/baz.html')
+I revised it to:
+
+import urllib.request as urlrq
+import certifi
+
+resp = urlrq.urlopen('https://example.com/bar/baz.html', cafile=certifi.where())
+If I read the urllib2.urlopen documentation correctly, it also has a cafile argument. So, urllib2.urlopen([...], certifi.where()) might work for Python 2.7 as well.
+
+UPDATE (2020-01-01): As of Python 3.6, the cafile argument to urlopen has been deprecated, with the context argument supposed to be specified instead. I found the following to work equally well on 3.5 through 3.8:
+import urllib.request as urlrq
+import certifi
+import ssl
+
+resp = urlrq.urlopen('https://example.com/bar/baz.html', context=ssl.create_default_context(cafile=certifi.where()))"
+
+
