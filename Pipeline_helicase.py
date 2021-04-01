@@ -47,7 +47,6 @@ else: # si le connexion réussie
     with open(args.helicasefile, "r") as fh:  # reading tsv entry file using args module
         tsv_helicases = csv.reader(fh, delimiter="\t")
         for line in tsv_helicases:
-            print(line[1])
             arcogs = []
             try:
                 url = "https://www.uniprot.org/uniprot/"+line[1]+".txt" 
@@ -76,7 +75,6 @@ else: # si le connexion réussie
     with open(args.arcogs, "r") as fa:
         tsv_arcogs = csv.reader(fa, delimiter="\t")
         for line in tsv_arcogs:
-            print(line[3])
             if line[3] == "":
                 cursor.execute("INSERT INTO cog (id_cog, description, category) VALUES (%s,%s ,%s)", (line[1],'NA', line[2],))
             else: 
