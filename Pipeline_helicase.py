@@ -70,7 +70,7 @@ else: # si le connexion réussie
             except Exception as err:
                 print(f'Other error occurred: {err}')  # Python 3.6
         
-        cursor.execute("CREATE VIEW multiple_status AS SELECT id_uniprot, count(*) FROM PROTEINS_COG GROUP BY id_uniprot;")
+        cursor.execute("CREATE VIEW multiple_status AS SELECT id_uniprot, count(*) FROM proteins_cog GROUP BY id_uniprot;")
     
     with open(args.arcogs, "r") as fa:
         tsv_arcogs = csv.reader(fa, delimiter="\t")
@@ -79,7 +79,6 @@ else: # si le connexion réussie
                 cursor.execute("INSERT INTO cog (id_cog, description, category) VALUES (%s,%s ,%s)", (line[1],'NA', line[2],))
             else: 
                 cursor.execute("INSERT INTO cog (id_cog, description, category) VALUES (%s,%s ,%s)", (line[1], line[3], line[2]))
-
 finally:
     conn.commit()
     if(conn.is_connected()):
