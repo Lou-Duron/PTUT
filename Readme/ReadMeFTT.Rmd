@@ -96,4 +96,24 @@ import ssl
 
 resp = urlrq.urlopen('https://example.com/bar/baz.html', context=ssl.create_default_context(cafile=certifi.where()))"
 
+# New solution with requests library
+First, you need to connect to mysql and drop all the tables in database ptut
+since all the tables have been renamed and the drop argument will therefore not work.
+
+Second, once in your conda environment you need to install the resquests library with this following commande: 
+
+```{r eval = False}
+pip install requests 
+```
+
+Third, you need to download the table from eggnog with the description and the type of each eggnog called 2157_annotations.tsv at this adress. **Don't fortget to put it in the "data" directory to not push it in the gitlab** 
+
+http://eggnog5.embl.de/download/eggnog_5.0/per_tax_level/2157/
+
+Finally, a new argument has been added in pipeline '-c' for the annotation file. To execute Pipeline.py use the following command (adapt if path different).
+/!\ You may need to add execution right for Pipeline.py 
+
+```{r eval = False}
+./Pipeline_helicase.py -f data/sf2pfams_archA-sp.tsv -c data/2157_annotations.tsv 
+```
 
