@@ -41,7 +41,7 @@ else: # si le connexion réussie
 
     # Create tables if not exist
     cursor.execute("CREATE TABLE IF NOT EXISTS `proteins_cog`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),PRIMARY KEY(`id_uniprot`, `id_cog`));")
-    cursor.execute("CREATE TABLE IF NOT EXISTS `cog`(`id_cog` VARCHAR(30) UNIQUE, `category` VARCHAR(100), `description` BLOB, PRIMARY KEY(`id_cog`));")
+    cursor.execute("CREATE TABLE IF NOT EXISTS `cog`(`id_cog` VARCHAR(30) UNIQUE, `category` VARCHAR(100), `description` TEXT, PRIMARY KEY(`id_cog`));")
 
 
     with open(args.helicasefile, "r") as fh:  # reading tsv entry file using args module
