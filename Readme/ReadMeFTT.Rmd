@@ -102,7 +102,7 @@ since all the tables have been renamed and the drop argument will therefore not 
 
 Second, once in your conda environment you need to install the resquests library with this following commande: 
 
-```{r eval = False}
+```{r eval = FALSE}
 pip install requests 
 ```
 
@@ -113,7 +113,7 @@ http://eggnog5.embl.de/download/eggnog_5.0/per_tax_level/2157/
 Finally, a new argument has been added in pipeline '-c' for the annotation file. To execute Pipeline.py use the following command (adapt if path different).
 /!\ You may need to add execution right for Pipeline.py 
 
-```{r eval = False}
+```{r eval = FALSE}
 ./Pipeline_helicase.py -f data/sf2pfams_archA-sp.tsv -c data/2157_annotations.tsv 
 ```
 
