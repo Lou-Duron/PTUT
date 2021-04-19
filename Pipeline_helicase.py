@@ -38,11 +38,11 @@ else: # si le connexion réussie
 
     # Drop tables if new changes
     if args.drop :
-        cursor.execute("DROP TABLE IF EXISTS`proteins_cog`")
-        cursor.execute("DROP TABLE IF EXISTS`cog`")
-        cursor.execute("DROP VIEW IF EXISTS`multiple_status`")
-        cursor.execute("DROP TABLE IF EXISTS`strain_proteins`")
-        cursor.execute("DROP VIEW IF EXISTS`paralogy`")
+        cursor.execute("DROP TABLE IF EXISTS `proteins_cog`")
+        cursor.execute("DROP TABLE IF EXISTS `cog`")
+        cursor.execute("DROP VIEW IF EXISTS `multiple_status`")
+        cursor.execute("DROP TABLE IF EXISTS `strain_proteins`")
+        cursor.execute("DROP VIEW IF EXISTS `paralogy`")
 
     # Create tables if not exist
     cursor.execute("CREATE TABLE IF NOT EXISTS `proteins_cog`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),PRIMARY KEY(`id_uniprot`, `id_cog`));")
@@ -52,9 +52,9 @@ else: # si le connexion réussie
     with open(args.helicasefile, "r") as fh:  # reading tsv entry file using args module
         tsv_helicases = csv.reader(fh, delimiter="\t")
         obsolete = []
+        
         for line in tsv_helicases: #File with uniprot id and CBI id
-            id_uniprot = line[1]
-            print(id_uniprot)
+            id_uniprot = line[1]            
             try:
                 # Arcogs retrieval 
                 arcogs = []    

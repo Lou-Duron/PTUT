@@ -29,6 +29,7 @@ else: # si le connexion réussie
     for rows in results:
         eggnog_mapper_file.write(">"+rows[0]+"\n"+rows[1]+"\n")
     eggnog_mapper_file.close()
+    
     cmd = (f"eggnog-mapper/./emapper.py --cpu 4 -i results/eggnog_mapper_file.fa --output arcogs_results.fa --output_dir results/ -m diamond -d none --tax_scope 2157 --go_evidence non-electronic --target_orthologs all --seed_ortholog_evalue 0.001 --seed_ortholog_score 60 --query_cover 20 --subject_cover 0 --override --temp_dir results/temp --block_size 1")
     os.system(cmd)
 
