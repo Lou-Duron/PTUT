@@ -1782,8 +1782,33 @@ div.tocify {
 <p>Here the procedure step by step:</p>
 <p>You need to create a directory called “configurations” <br> Then in this directory create a file called config.py <br> Then open this file and complete the following code <br></p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>BD_USER =<span class="st"> &quot;yourusername&quot;</span> <span class="co">#Probably root</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>BD_PASSWORD =<span class="st"> &quot;yourpassword&quot;</span> <span class="co">#mysql password (the one you configure)</span></span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2"></a>BD_PASSWORD =<span class="st"> &quot;yourpassword&quot;</span> <span class="co">#mysql password (the one you configured)</span></span></code></pre></div>
 <p>Test if it works by executing the Data_Treatment.py file</p>
+</div>
+<div id="ssl-problem" class="section level1">
+<h1>SSL Problem</h1>
+<p><a href="https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error" class="uri">https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error</a></p>
+<p>To do requests on the database we need a SSL certificate.An SSL certificate is a type of digital certificate that provides authentication for a website and enables an encrypted connection. To provide this certificate here is the answer found on stack overflow (it’s not the first one).</p>
+<p>&quot;I was having a similar problem, though I was using urllib.request.urlopen in Python 3.4, 3.5, and 3.6. (This is a portion of the Python 3 equivalent of urllib2, per the note at the head of Python 2’s urllib2 documentation page.)</p>
+<p>My solution was to pip install certifi to install certifi, which has:</p>
+<p>… a carefully curated collection of Root Certificates for validating the trustworthiness of SSL certificates while verifying the identity of TLS hosts.</p>
+<p>Then, in my code where I previously just had:</p>
+<p>import urllib.request as urlrq</p>
+<p>resp = urlrq.urlopen(‘<a href="https://example.com/bar/baz.html" class="uri">https://example.com/bar/baz.html</a>’) I revised it to:</p>
+<p>import urllib.request as urlrq import certifi</p>
+<p>resp = urlrq.urlopen(‘<a href="https://example.com/bar/baz.html" class="uri">https://example.com/bar/baz.html</a>’, cafile=certifi.where()) If I read the urllib2.urlopen documentation correctly, it also has a cafile argument. So, urllib2.urlopen([…], certifi.where()) might work for Python 2.7 as well.</p>
+<p>UPDATE (2020-01-01): As of Python 3.6, the cafile argument to urlopen has been deprecated, with the context argument supposed to be specified instead. I found the following to work equally well on 3.5 through 3.8: import urllib.request as urlrq import certifi import ssl</p>
+<p>resp = urlrq.urlopen(‘<a href="https://example.com/bar/baz.html" class="uri">https://example.com/bar/baz.html</a>’, context=ssl.create_default_context(cafile=certifi.where()))&quot;</p>
+</div>
+<div id="new-solution-with-requests-library" class="section level1">
+<h1>New solution with requests library</h1>
+<p>First, you need to connect to mysql and drop all the tables in database ptut since all the tables have been renamed and the drop argument will therefore not work.</p>
+<p>Second, once in your conda environment you need to install the resquests library with this following commande:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>pip install requests </span></code></pre></div>
+<p>Third, you need to download the table from eggnog with the description and the type of each eggnog called 2157_annotations.tsv at this adress. <strong>Don’t fortget to put it in the “data” directory to not push it in the gitlab</strong></p>
+<p><a href="http://eggnog5.embl.de/download/eggnog_5.0/per_tax_level/2157/" class="uri">http://eggnog5.embl.de/download/eggnog_5.0/per_tax_level/2157/</a></p>
+<p>Finally, a new argument has been added in pipeline ‘-c’ for the annotation file. To execute Pipeline.py use the following command (adapt if path different). /! You may need to add execution right for Pipeline.py</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>.<span class="op">/</span>Pipeline_helicase.py <span class="op">-</span>f data<span class="op">/</span>sf2pfams_archA<span class="op">-</span>sp.tsv <span class="op">-</span>c data<span class="op">/</span><span class="dv">2157</span>_annotations.tsv </span></code></pre></div>
 </div>
 
 
