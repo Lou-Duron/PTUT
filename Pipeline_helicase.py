@@ -46,8 +46,8 @@ else: # si le connexion réussie
 
     # Create tables if not exist
     cursor.execute("CREATE TABLE IF NOT EXISTS `proteins_cog`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),PRIMARY KEY(`id_uniprot`, `id_cog`));")
-    cursor.execute("CREATE TABLE IF NOT EXISTS `cog`(`id_cog` VARCHAR(30) UNIQUE, `category` VARCHAR(100), `description` BLOB, PRIMARY KEY(`id_cog`));")
-    cursor.execute("CREATE TABLE IF NOT EXISTS `strain_proteins`(`strain` VARCHAR(30), `id_uniprot` VARCHAR(30), `sequence` BLOB, PRIMARY KEY(`id_uniprot`));")
+    cursor.execute("CREATE TABLE IF NOT EXISTS `cog`(`id_cog` VARCHAR(30) UNIQUE, `category` VARCHAR(100), `description` TEXT, PRIMARY KEY(`id_cog`));")
+    cursor.execute("CREATE TABLE IF NOT EXISTS `strain_proteins`(`strain` VARCHAR(30), `id_uniprot` VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
 
     with open(args.helicasefile, "r") as fh:  # reading tsv entry file using args module
         tsv_helicases = csv.reader(fh, delimiter="\t")
@@ -100,9 +100,11 @@ else: # si le connexion réussie
         tsv_arcogs = csv.reader(fa, delimiter="\t")
         for line in tsv_arcogs:
             if line[3] == "":
-                cursor.execute("INSERT INTO cog (id_cog, description, category) VALUES (%s,%s ,%s)", (line[1], None, line[2],))
-            else: 
-                cursor.execute("INSERT INTO cog (id_cog, description, category) VALUES (%s,%s ,%s)", (line[1], line[3], line[2]))
+                cursor.execute("INSERT INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
+                               (line[1], line[2], None))
+            else:
+                cursor.execute("INSERT INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
+                               (line[1], line[2], line[3]))
     
     #Views
     cursor.execute("CREATE VIEW multiple_status AS SELECT id_uniprot, count(*) AS multiple FROM proteins_cog GROUP BY id_uniprot;") #Proteins with multiple cogs associated
