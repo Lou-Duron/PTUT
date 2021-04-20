@@ -40,41 +40,64 @@ else:  # si le connexion réussie
         proteins_table_count = 0
         for line in fh:
             proteins_table_count += 1
-        print("There is' ", proteins_table_count, " proteins in the helicase file")
+        print("Number of proteins in the helicase file : ", proteins_table_count)
 
     # Test proteins number in the database that have an associated cog
     cursor.execute("SELECT DISTINCT id_uniprot FROM proteins_cog  WHERE id_cog != 'NA'")
     proteins_cog_table = cursor.fetchall()
-    print("There'is ", len(proteins_cog_table), " proteins in the database that does have an associated  cog")
+    print("Number of proteins in the database that have an associated cog : ", len(proteins_cog_table))
 
     # Test proteins number in the database that doesn't have an associated cog
     cursor.execute("SELECT  id_uniprot FROM proteins_cog WHERE id_cog = 'NA'")
     proteins_NA_table = cursor.fetchall()
-    print("There'is ", len(proteins_NA_table), " proteins in the database that doesn't have an associated cog")
+    print("Number of proteins in the database that doesn't have an associated cog : ", len(proteins_NA_table))
 
     # Test if there's the same amount of proteins in the database and in the helicase file
-    print(proteins_table_count == len(proteins_NA_table) + len(proteins_cog_table))
+    print("same amount of proteins in database and file ?", proteins_table_count == len(proteins_NA_table) + len(proteins_cog_table))
 
-    # Test if there's the same amount of proteins in the database and in the helicase file
-    cursor.execute("SELECT id_cog FROM proteins_cog GROUP_BY id_cog WHERE id_cog = ( SELECT id_cog FROM cog GROUP_BY id_cog )")
-    result = cursor.fetchall()
-    print(result)
-    print("There'is ", len(result), " proteins in the database that doesn't have an associated cog")
+    # Same number but some proteins can be in double ( Distinct in the previous request )
 
-    """# Test if there is
-    cursor.execute("SELECT COUNT (id_cog) FROM proteins_cog GROUP_BY id_cog WHERE id_cog = ( SELECT id_cog FROM cog GROUP_BY id_cog )")
-    result = cursor.fetchall()
-    print(result)"""
-
-    # Test number of proteins that have a multiple status
-    cursor.execute("SELECT COUNT (id_uniprot) FROM multiple_status WHERE multiple != 1")
-    result = cursor.fetchall()
-    print(result)
+    print("\nMultiple Status ")
 
     # Test number of proteins that have a single status
-    cursor.execute("SELECT COUNT (id_uniprot) FROM multiple_status WHERE multiple = 1")
+    cursor.execute("SELECT COUNT(id_uniprot) FROM multiple_status WHERE multiple = 1")
+    result = cursor.fetchall()
+    print("Number of proteins with single status : ", result[0][0])
+
+    # Test number of proteins that have a multiple status
+    cursor.execute("SELECT COUNT(id_uniprot) FROM multiple_status WHERE multiple > 1")
+    result = cursor.fetchall()
+    print("Number of proteins with multiple status : ", result[0][0])
+
+    # Test which proteins have a multiple status
+    cursor.execute("SELECT id_uniprot, multiple FROM multiple_status WHERE multiple > 1")
     result = cursor.fetchall()
     print(result)
+
+    print("\nAnnotations file")
+
+    # Test number of arcogs in the annotation file
+    with open(args.arcogs, "r") as fh:
+        arcogs_table_count = 0
+        for line in fh:
+            arcogs_table_count += 1
+        print("Number of arcogs in the annotation file : ", arcogs_table_count)
+
+    # Test number of arcogs in the database
+    cursor.execute("SELECT id_cog FROM cog")
+    arcogs_table = cursor.fetchall()
+    print("Number of arcogs in the table cog : ", len(arcogs_table))
+
+    # Test if there's the same amount of arcogs in the database and in the annotation file
+    print("Same amount of arcogs in file and database ?", arcogs_table_count == len(arcogs_table))
+
+    # Same amount of arcogs + no doubles.
+
+
+
+
+
+
 
 
 
