@@ -61,13 +61,13 @@ else:  # si le connexion réussie
 
     # Test number of proteins that have a single status
     cursor.execute("SELECT COUNT(id_uniprot) FROM multiple_status WHERE multiple = 1")
-    result = cursor.fetchall()
-    print("Number of proteins with single status : ", result[0][0])
+    result_single_status = cursor.fetchall()
+    print("Number of proteins with single status : ", result_single_status[0][0])
 
     # Test number of proteins that have a multiple status
     cursor.execute("SELECT COUNT(id_uniprot) FROM multiple_status WHERE multiple > 1")
-    result = cursor.fetchall()
-    print("Number of proteins with multiple status : ", result[0][0])
+    result_multiple_status = cursor.fetchall()
+    print("Number of proteins with multiple status : ", result_multiple_status[0][0])
 
     # Test which proteins have a multiple status
     cursor.execute("SELECT id_uniprot, multiple FROM multiple_status WHERE multiple > 1")
@@ -92,6 +92,34 @@ else:  # si le connexion réussie
     print("Same amount of arcogs in file and database ?", arcogs_table_count == len(arcogs_table))
 
     # Same amount of arcogs + no doubles.
+
+
+
+    # Reste à tester les obsoletes. -> combien et savoir si font parti des multiple ? ou de celles qu'on a pas d'arcog.
+    # Tester parmi toutes les obsoletes est-ce qu'elles font parti de la requete multiple status ou de la requete pas d'arcog associé
+
+    with open("results/obsolete_proteins", "r") as fh:
+        for protein in fh:
+            query =
+            cursor.execute("SELECT multiple FROM multiple_status WHERE id_uniprot = (%s)", (protein,))
+            print(cursor.fetchall())
+
+
+
+query = ("SELECT first_name, last_name, hire_date FROM employees "
+         "WHERE hire_date BETWEEN %s AND %s")
+
+hire_start = datetime.date(1999, 1, 1)
+hire_end = datetime.date(1999, 12, 31)
+
+cursor.execute(query, (hire_start, hire_end))
+
+for (first_name, last_name, hire_date) in cursor:
+  print("{}, {} was hired on {:%d %b %Y}".format(
+    last_name, first_name, hire_date))
+
+cursor.close()
+cnx.close()
 
 
 
