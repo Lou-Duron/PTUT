@@ -1,27 +1,35 @@
 ---
-title: "ReadMe for users - Archeal Helicases Project"
+title: "ReadMe for users"
 output:
   html_document:
     code_folding: show
     toc: TRUE
     toc_float: TRUE
-    toc_depth: 4
+    toc_depth: 5
     theme: paper
     highlight: tango
 editor_options: 
   chunk_output_type: console
 ---
 
-# Installation needed for the pipeline 
+# Installation and Configurations
 
 For this project the following libraries are needed: 
-- mysql-connector-python version: 8.0.18 (used with python 3.8)
+- python >= 3.7 <br>
+- mysql-connector-python version: 8.0.18 <br>
+- additional libraries for eggnog-mapper tool version 2.1.2, available here https://github.com/eggnogdb/eggnog-mapper/wiki/eggNOG-mapper-v2.1.2
 
-mysql.conenctor library may require configuration of environment to solve Library dependencies. In this project a conda environment was used with the following commands in the shell: 
+<br>
+For installation execute <name>, it will create:
+- conda environnement with all the required libraries
+- install eggnog-mapper 
 
-```{r, eval = FALSE}
-conda create -n project name
-conda install -c anaconda mysql-connector-python
-```
+For privacy reasons you need to enter your username and password to connect to mysql
+
+# Creation of Database - Database_Creation.py
+
+
+
+# Issues 
 
 
