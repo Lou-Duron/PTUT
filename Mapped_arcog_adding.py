@@ -43,9 +43,6 @@ else:  # si le connexion réussie
 
     print("Nombre de lignes ajoutées : ", i)
 
-
-finally:
     conn.commit()
-    if conn.is_connected():
-        cursor.close()  # close cursor
-        conn.close()  # close connection
+    cursor.close()  # close cursor
+    conn.close()  # close connection

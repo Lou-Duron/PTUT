@@ -31,7 +31,8 @@ try:
                 
 except mc.Error as err: # si la connexion échoue
     print(err)
-
+cursor.close() # close cursor
+    conn.close() # close connection
 else: # si le connexion réussie
 
     cursor = conn.cursor() # Création du curseur
@@ -116,8 +117,7 @@ else: # si le connexion réussie
     for proteins in obsolete:
         obsolete_file.write(proteins + "\n")
     obsolete_file.close()
-
+    
     conn.commit()
-    if(conn.is_connected()):
-        cursor.close() # close cursor
-        conn.close() # close connection
+    cursor.close() # close cursor
+    conn.close() # close connection

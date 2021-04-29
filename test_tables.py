@@ -93,8 +93,6 @@ else:  # si le connexion réussie
 
     # Same amount of arcogs + no doubles.
 
-
-
     # Reste à tester les obsoletes. -> combien et savoir si font parti des multiple ? ou de celles qu'on a pas d'arcog.
     # Tester parmi toutes les obsoletes est-ce qu'elles font parti de la requete multiple status ou de la requete pas d'arcog associé
 
