@@ -52,9 +52,11 @@ else: # si le connexion réussie
     with open(args.helicasefile, "r") as fh:  # reading tsv entry file using args module
         tsv_helicases = csv.reader(fh, delimiter="\t")
         obsolete = []
+        count_proteins = 0
         
         for line in tsv_helicases: #File with uniprot id and CBI id
-            id_uniprot = line[1]            
+            id_uniprot = line[1]
+            count_proteins += 1            
             try:
                 # Arcogs retrieval 
                 arcogs = []    
@@ -115,7 +117,6 @@ else: # si le connexion réussie
         obsolete_file.write(proteins + "\n")
     obsolete_file.close()
 
-finally:
     conn.commit()
     if(conn.is_connected()):
         cursor.close() # close cursor

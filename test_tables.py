@@ -45,7 +45,7 @@ else:  # si le connexion réussie
     # Test proteins number in the database that have an associated cog
     cursor.execute("SELECT DISTINCT id_uniprot FROM proteins_cog  WHERE id_cog != 'NA'")
     proteins_cog_table = cursor.fetchall()
-    print("Number of proteins in the database that have an associated cog : ", len(proteins_cog_table))
+    print("Number of proteins in the database that have been associated to one or multiple arcog : ", len(proteins_cog_table))
 
     # Test proteins number in the database that doesn't have an associated cog
     cursor.execute("SELECT  id_uniprot FROM proteins_cog WHERE id_cog = 'NA'")
@@ -100,40 +100,23 @@ else:  # si le connexion réussie
 
     with open("results/obsolete_proteins", "r") as fh:
         for protein in fh:
-            query =
             cursor.execute("SELECT multiple FROM multiple_status WHERE id_uniprot = (%s)", (protein,))
             print(cursor.fetchall())
 
+    cursor.close()
 
 
-query = ("SELECT first_name, last_name, hire_date FROM employees "
-         "WHERE hire_date BETWEEN %s AND %s")
+# query = ("SELECT first_name, last_name, hire_date FROM employees WHERE hire_date BETWEEN %s AND %s")
 
-hire_start = datetime.date(1999, 1, 1)
-hire_end = datetime.date(1999, 12, 31)
+# hire_start = datetime.date(1999, 1, 1)
+# hire_end = datetime.date(1999, 12, 31)
 
-cursor.execute(query, (hire_start, hire_end))
+# cursor.execute(query, (hire_start, hire_end))
 
-for (first_name, last_name, hire_date) in cursor:
-  print("{}, {} was hired on {:%d %b %Y}".format(
-    last_name, first_name, hire_date))
+# for (first_name, last_name, hire_date) in cursor:
+#   print("{}, {} was hired on {:%d %b %Y}".format(
+#     last_name, first_name, hire_date))
 
-cursor.close()
-cnx.close()
-
-
-
-
-
-
-
-
-
-finally:
-    conn.commit()
-    if(conn.is_connected()):
-        cursor.close() # close cursor
-        conn.close() # close connection
 
 
 
