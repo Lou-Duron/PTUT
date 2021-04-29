@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import mysql.connector as mc
-import csv
 import argparse
 from configurations import config
-import requests
-from requests.exceptions import HTTPError
+
 
 ################################################################################################
 parser = argparse.ArgumentParser(description='Database Creation')
@@ -19,6 +17,10 @@ parser.add_argument('--drop', '-d', required=False, action="store_true", help='d
 args = parser.parse_args()
 ###############################################################################################
 
+"""
+This file permit to test if our database is well construted + some results
+Run this after running the pipeline_helicase.py file and after running the Mapped_arcof_adding.py
+"""
 
 try:
     # try connection the database
@@ -74,6 +76,19 @@ else:  # si le connexion réussie
     result = cursor.fetchall()
     print(result)
 
+    print("\nCogs")
+
+    # Test number of cogs associated with our proteins that are type S
+    cursor.execute("SELECT count(category) FROM cog WHERE category = 'S' AND id_cog IN (SELECT id_cog FROM proteins_cog WHERE id_cog != 'NA')")
+    result_type_S = cursor.fetchall()
+    print("Number of proteins which are associated with a type S arcog : ", result_type_S[0][0])
+
+    # Test number of unique COG in our database
+    cursor.execute("SELECT COUNT(DISTINCT id_cog) FROM proteins_cog;")
+    reslut_unique_cog = cursor.fetchall()
+    print("Number of unique cog associated to our proteins : ", reslut_unique_cog[0][0]-1)
+
+
     print("\nAnnotations file")
 
     # Test number of arcogs in the annotation file
@@ -96,10 +111,15 @@ else:  # si le connexion réussie
     # Reste à tester les obsoletes. -> combien et savoir si font parti des multiple ? ou de celles qu'on a pas d'arcog.
     # Tester parmi toutes les obsoletes est-ce qu'elles font parti de la requete multiple status ou de la requete pas d'arcog associé
 
+    print("\nObsolete proteins")
+
     with open("results/obsolete_proteins", "r") as fh:
+        obsolete_proteins_count = 0
         for protein in fh:
-            cursor.execute("SELECT multiple FROM multiple_status WHERE id_uniprot = (%s)", (protein,))
-            print(cursor.fetchall())
+            obsolete_proteins_count += 1
+        print("Number of obsolete proteins : ", obsolete_proteins_count)
+
+
 
     cursor.close()
 
