@@ -31,8 +31,7 @@ try:
                 
 except mc.Error as err: # si la connexion échoue
     print(err)
-cursor.close() # close cursor
-    conn.close() # close connection
+
 else: # si le connexion réussie
 
     cursor = conn.cursor() # Création du curseur
