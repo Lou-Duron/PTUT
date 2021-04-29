@@ -24,7 +24,7 @@ else
     mkdir configurations
 
     wget -O data/2157_annotations.tsv.gz http://eggnog5.embl.de/download/eggnog_5.0/per_tax_level/2157/2157_annotations.tsv.gz
-    tar -xvzf data/2157_annotations.tsv.gz
+    gunzip data/2157_annotations.tsv.gz
     printf "${green}Need to enter username and password of mysql\n"
     printf "${green}Please enter your username\n${reset}" 
     read -i -e username
