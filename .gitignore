@@ -1,6 +1,6 @@
 .vscode/*
 .Rhistory
-configurations/*
+analysis/configurations/*
 __pycache__/*
 data/*
 eggnog-mapper/
