@@ -7,13 +7,15 @@ import argparse
 from configurations import config
 import requests
 from requests.exceptions import HTTPError
+import time
 
 ################################################################################################
 parser = argparse.ArgumentParser(description='Database Creation') 
 parser.add_argument('--helicasefile', '-f', type=str,
                     help="tsv file with CGBD id associated to uniprot protein id ")
-parser.add_argument('--arcogs', '-c', type=str, required=False, help="tsv file with id_cogs descriptions and type from "
+parser.add_argument('--arcogs', '-a', type=str, required=False, help="tsv file with id_cogs descriptions and type from "
                                                                      "eggnog")
+parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 
 parser.add_argument('--drop', '-d', required=False, action="store_true", help='drop all tables')
 
@@ -23,7 +25,6 @@ args = parser.parse_args()
 try:
     # try connection the database
     conn = mc.connect(host='localhost',
-    database='ptut',
     user=config.BD_USER,  # BD_USER by default in directroy configurations
     password=config.BD_PASSWORD)  # BD_PASSEWORD by default in directory configurations
 
@@ -33,14 +34,19 @@ except mc.Error as err:  # si la connexion échoue
 else:  # si le connexion réussie
 
     cursor = conn.cursor()  # Création du curseur
-
     # Drop tables if new changes
+
     if args.drop:
+        cursor.execute(f"USE {args.database}")
         cursor.execute("DROP TABLE IF EXISTS `proteins_cog`")
         cursor.execute("DROP TABLE IF EXISTS `cog`")
         cursor.execute("DROP VIEW IF EXISTS `multiple_status`")
         cursor.execute("DROP TABLE IF EXISTS `strain_proteins`")
         cursor.execute("DROP VIEW IF EXISTS `paralogy`")
+
+    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {args.database}")
+    cursor.execute(f"USE {args.database}")
+
 
     # Create tables if not exist
     cursor.execute("CREATE TABLE IF NOT EXISTS `proteins_cog`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),"
@@ -53,22 +59,27 @@ else:  # si le connexion réussie
     with open(args.helicasefile, "r") as fh:  # reading tsv entry file using args module
         tsv_helicases = csv.reader(fh, delimiter="\t")
         obsolete = []
-        count_proteins = 0
-        
         for line in tsv_helicases:  # File with uniprot id and CBI id
             id_uniprot = line[1]
-            count_proteins += 1            
-            try:
-                # Arcogs retrieval 
-                arcogs = []    
-                url_arcog = "https://www.uniprot.org/uniprot/"+id_uniprot+".txt" 
-                arcog_response = requests.get(url_arcog)
-                arcog_response.raise_for_status()  # If the response was successful, no Exception will be raised
-                Embl_file = arcog_response.text.split("\n")
+            # Arcogs retrieval 
+            arcogs = []    
+            url_arcog = "https://www.uniprot.org/uniprot/"+id_uniprot+".txt"
+            arcog_response = None
+            while arcog_response is None: # retry if exception occurs 
+                try: 
+                    arcog_response = requests.get(url_arcog)
+                    arcog_response.raise_for_status()  # If the response was successful, no Exception will be raised
                 
-                if arcog_response.text == "":
-                    obsolete.append(id_uniprot)
-               
+                except HTTPError as http_err:
+                    print(f'HTTP error occurred: {http_err}')  # Python 3.6
+                    time.sleep(1)
+                    arcog_response = None
+
+            Embl_file = arcog_response.text.split("\n")
+            if arcog_response.text == "":  # Unfortunately if obsolete do not return error but empty file 
+                obsolete.append(id_uniprot)
+
+            else :
                 for line_arc in Embl_file:  # file
                     if line_arc.startswith("DR   eggNOG"):
                         arcog = line_arc.split("; ")
@@ -87,21 +98,29 @@ else:  # si le connexion réussie
                 strain = line[0].split(".")
                 strain = strain[0][0:5]
                 url_seq = "https://www.uniprot.org/uniprot/"+id_uniprot+".fasta" 
-                seq_response = requests.get(url_seq)
-                seq_response.raise_for_status()  # If the response was successful, no Exception will be raised
+                seq_response = None
+
+                while seq_response is None: # retry if exception occurs 
+                    try: 
+                        seq_response = requests.get(url_seq)
+                        seq_response.raise_for_status() # If the response was successful, no Exception will be raised
+                    
+                    except HTTPError as http_err:
+                        print(f'HTTP error occurred: {http_err}')  # Python 3.6
+                        time.sleep(1)
+                        seq_response = None
+                                
                 fasta = seq_response.text
                 if fasta != '':
                     fasta = fasta.split("\n", 1)
                     seq = fasta[1].replace("\n", '')
                     cursor.execute("INSERT INTO strain_proteins (strain, id_uniprot, sequence) VALUES (%s,%s,%s)",
-                                   (strain, id_uniprot, seq))  # Table with strain and proteins and sequence
+                                (strain, id_uniprot, seq))  # Table with strain and proteins and sequence
                 else:
                     cursor.execute("INSERT INTO strain_proteins (strain, id_uniprot, sequence) VALUES (%s,%s,%s)",
-                                   (strain, id_uniprot, None))  # Table with strain and proteins and sequence
+                                (strain, id_uniprot, None))  # Table with strain and proteins and sequence
 
-            except HTTPError as http_err:
-                print(f'HTTP error occurred: {http_err}')  # Python 3.6
-
+            
     with open(args.arcogs, "r") as fa:  # Reading of cog description
         tsv_arcogs = csv.reader(fa, delimiter="\t")
         for line in tsv_arcogs:
@@ -119,14 +138,11 @@ else:  # si le connexion réussie
                    "as proteins_count FROM proteins_cog NATURAL JOIN strain_proteins GROUP BY id_cog;")
     # strain and protein cog by cog
 
-    obsolete_file = open("results/obsolete_proteins", "w")
+    obsolete_file = open("results/obsolete_proteins.txt", "w")
     for proteins in obsolete:
         obsolete_file.write(proteins + "\n")
     obsolete_file.close()
-
-    conn.commit()
-
-finally:
+    
     conn.commit()
     if(conn.is_connected()):
         cursor.close()  # close cursor

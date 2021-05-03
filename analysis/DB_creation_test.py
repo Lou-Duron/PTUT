@@ -10,10 +10,9 @@ from configurations import config
 parser = argparse.ArgumentParser(description='Database Creation')
 parser.add_argument('--helicasefile', '-f', type=str,
                     help="tsv file with CGBD id associated to uniprot protein id ")
-parser.add_argument('--arcogs', '-c', type = str, required=False, help = "tsv file with id_cogs descriptions and type"
+parser.add_argument('--arcogs', '-a', type = str, help = "tsv file with id_cogs descriptions and type"
                                                                            " from eggnog")
-
-parser.add_argument('--drop', '-d', required=False, action="store_true", help='drop all tables')
+parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 
 args = parser.parse_args()
 ###############################################################################################
@@ -26,7 +25,7 @@ Run this after running the pipeline_helicase.py file and after running the Mappe
 try:
     # try connection the database
     conn = mc.connect(host='localhost',
-                      database='ptut',
+                      database=args.database,
                       user=config.BD_USER,  # BD_USER by default in directroy configurations
                       password=config.BD_PASSWORD)  # BD_PASSEWORD by default in directory configurations
 
@@ -38,12 +37,21 @@ else:  # si le connexion réussie
 
     cursor = conn.cursor()  # Création du curseur
 
+    print( "======================================================================================================================")
     # Test proteins number in the helicase file
     with open(args.helicasefile, "r") as fh:
-        proteins_table_count = 0
+        proteins_file_count = 0
         for line in fh:
-            proteins_table_count += 1
-        print("Number of proteins in the helicase file : ", proteins_table_count)
+            proteins_file_count += 1
+        print("Number of proteins in the helicase file : ", proteins_file_count)
+    
+    with open("results/obsolete_proteins", "r") as fh:
+        obsolete_proteins_count = 0
+        for protein in fh:
+            obsolete_proteins_count += 1
+
+    
+    print("Number of obsolete proteins : ", obsolete_proteins_count)
 
     # Test proteins number in the database that have an associated cog
     cursor.execute("SELECT DISTINCT id_uniprot FROM proteins_cog  WHERE id_cog != 'NA'")
@@ -52,16 +60,15 @@ else:  # si le connexion réussie
           len(proteins_cog_table))
 
     # Test proteins number in the database that doesn't have an associated cog
-    cursor.execute("SELECT  id_uniprot FROM proteins_cog WHERE id_cog = 'NA'")
+    cursor.execute("SELECT id_uniprot FROM proteins_cog WHERE id_cog = 'NA'")
     proteins_NA_table = cursor.fetchall()
     print("Number of proteins in the database that doesn't have an associated cog : ", len(proteins_NA_table))
+     # Test if there's the same amount of proteins in the database and in the helicase file
+    print("Number of proteins in database equals to protéins in file minus the obsolete?", proteins_file_count - obsolete_proteins_count  == len(proteins_NA_table) + len(proteins_cog_table))
 
-    # Test if there's the same amount of proteins in the database and in the helicase file
-    print("same amount of proteins in database and file ?", proteins_table_count == len(proteins_NA_table) +
-          len(proteins_cog_table))
+    print("Note : id_uniprot obsolete are not inserted into the database and are written in the following file results/obsolete_proteins.txt")
 
     # Same number but some proteins can be in double ( Distinct in the previous request )
-
     print("\nMultiple Status ")
 
     # Test number of proteins that have a single status
@@ -74,10 +81,14 @@ else:  # si le connexion réussie
     result_multiple_status = cursor.fetchall()
     print("Number of proteins with multiple status : ", result_multiple_status[0][0])
 
-    # Test which proteins have a multiple status
-    cursor.execute("SELECT id_uniprot, multiple FROM multiple_status WHERE multiple > 1")
-    result = cursor.fetchall()
-    print(result)
+    # Retrieve proteins with multiple status
+    cursor.execute("SELECT id_uniprot FROM multiple_status WHERE multiple > 1")
+    results = cursor.fetchall()
+    print("proteins with multiple status have been written in the following file results/multiple_status.txt")
+    multiple = open("results/multiple_status.txt", "w")
+    for proteins in results:
+        multiple.write(proteins[0] + "\n")
+    multiple.close()
 
     print("\nCogs")
 
@@ -96,10 +107,10 @@ else:  # si le connexion réussie
 
     # Test number of arcogs in the annotation file
     with open(args.arcogs, "r") as fh:
-        arcogs_table_count = 0
+        arcogs_file_count = 0
         for line in fh:
-            arcogs_table_count += 1
-        print("Number of arcogs in the annotation file : ", arcogs_table_count)
+            arcogs_file_count += 1
+        print("Number of arcogs in the annotation file : ", arcogs_file_count)
 
     # Test number of arcogs in the database
     cursor.execute("SELECT id_cog FROM cog")
@@ -107,37 +118,11 @@ else:  # si le connexion réussie
     print("Number of arcogs in the table cog : ", len(arcogs_table))
 
     # Test if there's the same amount of arcogs in the database and in the annotation file
-    print("Same amount of arcogs in file and database ?", arcogs_table_count == len(arcogs_table))
-
-    # Same amount of arcogs + no doubles.
-
-    # Reste à tester les obsoletes. -> combien et savoir si font parti des multiple ? ou de celles qu'on a pas d'arcog.
-    # Tester parmi toutes les obsoletes est-ce qu'elles font parti de la requete multiple status ou de la requete pas
-    # d'arcog associé
-
-    print("\nObsolete proteins")
-
-    with open("results/obsolete_proteins", "r") as fh:
-        obsolete_proteins_count = 0
-        for protein in fh:
-            obsolete_proteins_count += 1
-        print("Number of obsolete proteins : ", obsolete_proteins_count)
+    print("Number of arcogs in database equals to arcogs in file", arcogs_file_count == len(arcogs_table))
+    
+    print( "======================================================================================================================")
 
     cursor.close()
-
-# query = ("SELECT first_name, last_name, hire_date FROM employees WHERE hire_date BETWEEN %s AND %s")
-
-# hire_start = datetime.date(1999, 1, 1)
-# hire_end = datetime.date(1999, 12, 31)
-
-# cursor.execute(query, (hire_start, hire_end))
-
-# for (first_name, last_name, hire_date) in cursor:
-#   print("{}, {} was hired on {:%d %b %Y}".format(
-#     last_name, first_name, hire_date))
-
-
-finally:
     conn.commit()
     if(conn.is_connected()):
         cursor.close()  # close cursor
