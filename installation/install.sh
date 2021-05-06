@@ -19,14 +19,8 @@ if ! command -v mysql &> /dev/null; then
     printf "To install conda refers to https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/${reset}"
     exit
 else
-    if ! command -v  mkdir data &> /dev/null; then
-        mkdir ../data
-    fi
-
-    if ! command -v  mkdir configurations &> /dev/null; then
-        mkdir ../analysis/configurations
-        touch ../analysis/configurations/config.py
-    fi
+    mkdir -p ../data
+    mkdir -p ../analysis/configurations
     wget -O ../data/2157_annotations.tsv.gz http://eggnog5.embl.de/download/eggnog_5.0/per_tax_level/2157/2157_annotations.tsv.gz
     gunzip ../data/2157_annotations.tsv.gz
     printf "${green}Need to enter username and mysql password to connect to the desired database\n"
