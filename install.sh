@@ -5,7 +5,7 @@ reset=`tput sgr0`
 
 if ! command -v conda &> /dev/null; then
     printf "${red}conda could not be found "
-    printf "To install conda refers to https://conda.io/projects/conda/en/latest/user-guide/install/index.html${reset}\n"
+    printf "To install conda refers to https://conda.io/projects/conda/en/latest/user-guide/install/index.html${reset}"
     exit
 else
     echo "${green}Please enter the name of the environnment you want to create"
@@ -16,7 +16,7 @@ fi
 
 if ! command -v mysql &> /dev/null; then
     printf "${red}Mysql could not be found "
-    printf "To install Mysql refers to https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/${reset}\n"
+    printf "To install conda refers to https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/${reset}"
     exit
 else
     mkdir -p ../data
