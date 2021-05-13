@@ -3,7 +3,11 @@
 
 import mysql.connector as mc
 import argparse
+from pathlib import Path
 from configurations import config
+
+rootpath = Path(__file__).resolve().parent.parent #Get root path of project
+print(rootpath)
 
 
 ################################################################################################
@@ -18,9 +22,13 @@ args = parser.parse_args()
 ###############################################################################################
 
 """
-This file permit to test if our database is well construted + some results
-Run this after running the pipeline_helicase.py file and after running the Mapped_arcof_adding.py
+Test database creation and show results
+Run this after running the pipeline_helicase.py file and or running the Mapped_arcog_adding.py
 """
+
+rootpath = Path(__file__).resolve().parent.parent
+print(rootpath)
+
 
 try:
     # try connection the database
@@ -45,7 +53,8 @@ else:  # si le connexion réussie
             proteins_file_count += 1
         print("Number of proteins in the helicase file : ", proteins_file_count)
     
-    with open("results/obsolete_proteins", "r") as fh:
+    obsolete = rootpath / "analysis/results/obsolete_proteins.txt"
+    with open(obsolete, "r") as fh:
         obsolete_proteins_count = 0
         for protein in fh:
             obsolete_proteins_count += 1
@@ -85,7 +94,9 @@ else:  # si le connexion réussie
     cursor.execute("SELECT id_uniprot FROM multiple_status WHERE multiple > 1")
     results = cursor.fetchall()
     print("proteins with multiple status have been written in the following file results/multiple_status.txt")
-    multiple = open("results/multiple_status.txt", "w")
+    
+    multiplepath = rootpath / "analysis/results/multiple_status.txt"
+    multiple = open(multiplepath, "w")
     for proteins in results:
         multiple.write(proteins[0] + "\n")
     multiple.close()
