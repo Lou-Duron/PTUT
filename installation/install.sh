@@ -8,9 +8,10 @@ if ! command -v conda &> /dev/null; then
     printf "To install conda refers to https://conda.io/projects/conda/en/latest/user-guide/install/index.html${reset}\n"
     exit
 else
-    read -p "${green}Please Enter the name of your environnment : ${reset}" nameEnv
+	printf "${green}Please Enter the name of your environnment : ${reset}\n"
+	read -i -e nameEnv
     echo "${green}Creating your conda env $nameEnv ${reset}" 
-    conda env create --name $nameEnv --file installation/environment.yml
+    conda env create --name $nameEnv --file environment.yml
 fi
 
 if ! command -v mysql &> /dev/null; then
