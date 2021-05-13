@@ -8,8 +8,7 @@ if ! command -v conda &> /dev/null; then
     printf "To install conda refers to https://conda.io/projects/conda/en/latest/user-guide/install/index.html${reset}\n"
     exit
 else
-    echo "${green}Please enter the name of the environnment you want to create"
-    read -p "${green}Please Enter the name of your environnment${reset} " nameEnv
+    read -p "${green}Please Enter the name of your environnment : ${reset}" nameEnv
     echo "${green}Creating your conda env $nameEnv ${reset}" 
     conda env create --name $nameEnv --file installation/environment.yml
 fi
@@ -19,6 +18,7 @@ if ! command -v mysql &> /dev/null; then
     printf "To install Mysql refers to https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/${reset}\n"
     exit
 else
+	pwd
     mkdir -p ../data
     mkdir -p ../analysis/configurations
     wget -O ../data/2157_annotations.tsv.gz http://eggnog5.embl.de/download/eggnog_5.0/per_tax_level/2157/2157_annotations.tsv.gz
