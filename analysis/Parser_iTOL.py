@@ -10,7 +10,7 @@ from pathlib import Path
 
 ################################################################################################
 parser = argparse.ArgumentParser(description='Parser_iTOL') 
-parser.add_argument('--database', '-d', type = str, help = "database to connect to")
+parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 args = parser.parse_args()
 ###############################################################################################
 try:
