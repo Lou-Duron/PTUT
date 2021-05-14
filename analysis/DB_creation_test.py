@@ -7,7 +7,6 @@ from pathlib import Path
 from configurations import config
 
 rootpath = Path(__file__).resolve().parent.parent #Get root path of project
-print(rootpath)
 
 
 ################################################################################################
@@ -25,9 +24,6 @@ args = parser.parse_args()
 Test database creation and show results
 Run this after running the pipeline_helicase.py file and or running the Mapped_arcog_adding.py
 """
-
-rootpath = Path(__file__).resolve().parent.parent
-print(rootpath)
 
 
 try:

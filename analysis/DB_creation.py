@@ -8,6 +8,10 @@ from configurations import config
 import requests
 from requests.exceptions import HTTPError
 import time
+from pathlib import Path
+
+rootpath = Path(__file__).resolve().parent.parent #Get root path of project
+
 
 ################################################################################################
 parser = argparse.ArgumentParser(description='Database Creation') 
@@ -137,8 +141,9 @@ else:  # si le connexion réussie
     cursor.execute("CREATE VIEW paralogy AS SELECT id_cog, count(strain) AS strain_count, count(id_uniprot) "
                    "as proteins_count FROM proteins_cog NATURAL JOIN strain_proteins GROUP BY id_cog;")
     # strain and protein cog by cog
-
-    obsolete_file = open("results/obsolete_proteins.txt", "w")
+	
+    obsolete = rootpath / "analysis/results/obsolete_proteins.txt"
+    obsolete_file = open(obsolete, "w")
     for proteins in obsolete:
         obsolete_file.write(proteins + "\n")
     obsolete_file.close()
