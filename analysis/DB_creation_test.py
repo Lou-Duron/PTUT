@@ -45,7 +45,7 @@ else:  # si le connexion réussie
             proteins_file_count += 1
         print("Number of proteins in the helicase file : ", proteins_file_count)
     
-    with open("results/obsolete_proteins", "r") as fh:
+    with open("results/obsolete_proteins.txt", "r") as fh:
         obsolete_proteins_count = 0
         for protein in fh:
             obsolete_proteins_count += 1
