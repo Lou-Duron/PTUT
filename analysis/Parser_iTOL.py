@@ -5,8 +5,14 @@ import mysql.connector as mc
 from configurations import config
 import requests
 import random
+import argparse
+from pathlib import Path
 
 ################################################################################################
+parser = argparse.ArgumentParser(description='Parser_iTOL') 
+parser.add_argument('--database', '-d', type = str, help = "database to connect to")
+args = parser.parse_args()
+###############################################################################################
 try:
     conn = mc.connect(host='localhost',
     user=config.BD_USER,
@@ -16,11 +22,14 @@ except mc.Error as err:
     print(err)
 
 else:  
+    rootpath = Path(__file__).resolve().parent.parent
+    path = rootpath / "analysis/Visualization"
     cursor = conn.cursor()
     dico = {}
     dicoName = {}
     values = []
     colors = []
+    cursor.execute(f"USE {args.database}")
     cursor.execute("SELECT id_uniprot, id_cog FROM proteins_cog")
     for el in cursor:
         if el[1]!="NA":
@@ -60,51 +69,49 @@ else:
                         if id not in dicoName[name]:
                             dicoName[name].append(id)
 
-for el in range(len(values)):
-    colors.append("rgb("+str(random.randrange(255))+","+str(random.randrange(255))+","+str(random.randrange(255))+")")
+    for el in range(len(values)):
+        colors.append("rgb("+str(random.randrange(255))+","+str(random.randrange(255))+","+str(random.randrange(255))+")")
 
-
-
-with open("arbre.txt", "w") as tree:
-    with open("annotation_iTOL.txt", "w") as anot:
-        anot.write("DATASET_EXTERNALSHAPE"+"\n")
-        anot.write("SEPARATOR TAB"+"\n")
-        anot.write("DATASET_LABEL"+"\t"+"Annotation"+"\n")
-        anot.write("COLOR"+"\t"+"#ff0000"+"\n")
-        anot.write("FIELD_COLORS")
-        for el in colors:
-            anot.write("\t"+el)
-        anot.write("\n")
-        anot.write("FIELD_LABELS")
-        for el in values:
-            anot.write("\t"+str(el))
-        anot.write("\n")
-        anot.write("LEGEND_TITLE"+"\t"+"Legend"+"\n")
-        anot.write("LEGEND_POSITION_X"+"\t"+"100"+"\n")
-        anot.write("LEGEND_POSITION_Y"+"\t"+"100"+"\n")
-        anot.write("LEGEND_SHAPES")
-        for el in colors:
-            anot.write("\t"+"1")
-        anot.write("\n")
-        anot.write("LEGEND_COLORS")
-        for el in colors:
-            anot.write("\t"+el)
-        anot.write("\n")
-        anot.write("LEGEND_LABELS")
-        for el in values:
-            anot.write("\t"+str(el))
-        anot.write("\n")
-        anot.write("LEGEND_SHAPE_SCALES")
-        for el in colors:
-            anot.write("\t"+"1")
-        anot.write("\n")
-        anot.write("DATA"+"\n")
-        for i in dicoName.keys():
-            tree.write(i + "\n")
-            anot.write(i)
-            for j in values:
-                if j in dicoName[i]:
-                    anot.write("\t"+"50")
-                else:
-                    anot.write("\t"+"0")
+    with open(path + "/NCBI_tree.txt", "w") as tree:
+        with open(path + "/iTOL_annotation.txt", "w") as anot:
+            anot.write("DATASET_EXTERNALSHAPE"+"\n")
+            anot.write("SEPARATOR TAB"+"\n")
+            anot.write("DATASET_LABEL"+"\t"+"Annotation"+"\n")
+            anot.write("COLOR"+"\t"+"#ff0000"+"\n")
+            anot.write("FIELD_COLORS")
+            for el in colors:
+                anot.write("\t"+el)
             anot.write("\n")
+            anot.write("FIELD_LABELS")
+            for el in values:
+                anot.write("\t"+str(el))
+            anot.write("\n")
+            anot.write("LEGEND_TITLE"+"\t"+"Legend"+"\n")
+            anot.write("LEGEND_POSITION_X"+"\t"+"100"+"\n")
+            anot.write("LEGEND_POSITION_Y"+"\t"+"100"+"\n")
+            anot.write("LEGEND_SHAPES")
+            for el in colors:
+                anot.write("\t"+"1")
+            anot.write("\n")
+            anot.write("LEGEND_COLORS")
+            for el in colors:
+                anot.write("\t"+el)
+            anot.write("\n")
+            anot.write("LEGEND_LABELS")
+            for el in values:
+                anot.write("\t"+str(el))
+            anot.write("\n")
+            anot.write("LEGEND_SHAPE_SCALES")
+            for el in colors:
+                anot.write("\t"+"1")
+            anot.write("\n")
+            anot.write("DATA"+"\n")
+            for i in dicoName.keys():
+                tree.write(i + "\n")
+                anot.write(i)
+                for j in values:
+                    if j in dicoName[i]:
+                        anot.write("\t"+"50")
+                    else:
+                        anot.write("\t"+"0")
+                anot.write("\n")
