@@ -2,21 +2,28 @@
 # -*- coding: utf-8 -*-
 
 import mysql.connector as mc
-from configurations import config
+import argparse
 import csv
 import re
+from configurations import config
+
+################################################################################################
+parser = argparse.ArgumentParser(description='Add mapped arcogs to database and remove previous results')
+parser.add_argument('--database', '-b', type = str, help = "database to connect to")
+################################################################################################
+
 
 try:
     # try connection the database
     conn = mc.connect(host='localhost',
-                      database='ptut',
+                      database=args.database,
                       user=config.BD_USER,  # BD_USER by default in directroy configurations
                       password=config.BD_PASSWORD)  # BD_PASSEWORD by default in directory configurations
 
-except mc.Error as err:  # si la connexion échoue
+except mc.Error as err:  # if connection failed
     print(err)
 
-else:  # si le connexion réussie
+else:  # if connection succeed
     cursor = conn.cursor()
 
     with open("results/arcogs_results.fa.emapper (copie).annotations", "r") as fh:
