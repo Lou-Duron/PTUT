@@ -12,8 +12,8 @@ from configurations import config
 parser = argparse.ArgumentParser(description='Fasta File for eggnog mapper search')
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 parser.add_argument('--name', '-n', type=str, required=False, default='seqtosearch', help='filename')
-parser.add_argument('--all', '-a', required=False, action="store_true", help='filename')
-parser.add_argument('--partial', '-p',required=False, action="store_true", help='filename')
+parser.add_argument('--all', '-a', required=False, action="store_true", help='get all proteins')
+parser.add_argument('--partial', '-p',required=False, action="store_true", help='get only proteins without arcogs')
 args = parser.parse_args()
 ###############################################################################################
 

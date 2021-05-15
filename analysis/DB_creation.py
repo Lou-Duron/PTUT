@@ -20,8 +20,8 @@ parser.add_argument('--helicasefile', '-f', type=str,
 parser.add_argument('--arcogs', '-a', type=str, required=False, help="tsv file with id_cogs descriptions and type from "
                                                                      "eggnog")
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
-
 parser.add_argument('--drop', '-d', required=False, action="store_true", help='drop all tables')
+parser.add_argument('--name', '-n', type=str, required=False, default='obsolete', help='filename of obsolete uniprot id (default obsolete.txt)')
 
 args = parser.parse_args()
 ###############################################################################################
@@ -142,7 +142,7 @@ else:  # si le connexion réussie
                    "as proteins_count FROM proteins_cog NATURAL JOIN strain_proteins GROUP BY id_cog;")
     # strain and protein cog by cog
 	
-    obsolete = rootpath / "analysis/results/obsolete_proteins.txt"
+    obsolete = rootpath / f"analysis/results/{args.name}.txt"
     obsolete_file = open(obsolete, "w")
     for proteins in obsolete:
         obsolete_file.write(proteins + "\n")
