@@ -1,0 +1,27 @@
+## Mon May 17 16:50:50 2021
+## emapper-2.1.2
+## ./emapper.py --cpu 4 -i ../analysis/results/asgard.fa --output Asgard_results.fa --output_dir ../analysis/results/ -m diamond -d none --tax_scope 2157 --go_evidence non-electronic --target_orthologs all --seed_ortholog_evalue 0.001 --seed_ortholog_score 60 --query_cover 20 --subject_cover 0 --override --temp_dir ../analysis/results/temp --block_size 1
+##
+##/home/victoriafathi/Bureau/PTUT/GIT/ptut_helicases/eggnog-mapper/eggnogmapper/bin/diamond blastp -d /home/victoriafathi/Bureau/PTUT/GIT/ptut_helicases/eggnog-mapper/data/eggnog_proteins.dmnd -q /home/victoriafathi/Bureau/PTUT/GIT/ptut_helicases/analysis/results/asgard.fa --threads 4 -o /home/victoriafathi/Bureau/PTUT/GIT/ptut_helicases/analysis/results/Asgard_results.fa.emapper.hits  --sensitive -e 0.001 --query-cover 20.0 --subject-cover 0.0 --block-size 1.0 --top 3  --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore qcovhsp scovhsp
+#qseqid	sseqid	evalue	bitscore	qstart	qend	sstart	send	pident	qcov	scov
+A0A5B9D5Z4	348780.NP_3876A	4.7e-255	888.6	3	1767	6	1748	32.3	97.9	98.6
+A0A5B9D6L4	348780.NP_3872A	6.1e-143	515.4	7	1007	8	955	33.4	99.0	99.0
+A0A5B9D7F9	163908.KB235896_gene1940	2e-168	600.1	83	1080	120	1065	35.0	92.2	88.3
+A0A5B9D7Y7	426368.MmarC7_1452	3.2e-72	279.3	2	384	3	370	43.6	87.2	67.4
+A0A5B9D919	246969.TAM4_2130	5.6e-147	528.5	6	804	13	802	38.9	98.3	97.9
+A0A5B9DAM7	351160.RCIX575	5.5e-121	442.2	25	812	21	712	34.3	92.1	93.5
+A0A5B9DAU6	391623.TERMP_01136	1.3e-96	360.9	8	652	3	632	34.4	97.6	98.1
+A0A5B9DB47	1343739.PAP_06530	7.1e-74	285.4	22	523	10	491	36.6	71.3	63.1
+A0A5B9DC88	70601.3257700	3.1e-60	240.4	16	839	14	711	28.7	98.1	97.6
+A0A5B9DC98	1499684.CCNP01000018_gene1258	0.0	1082.4	3	1056	1	1056	52.3	99.7	99.9
+A0A5B9DCJ2	880073.Calab_0813	2.2e-111	410.2	1	801	1	797	32.8	99.4	99.1
+A0A5B9DCJ7	1262449.CP6013_3847	1.4e-71	277.3	3	395	6	383	40.1	78.0	72.4
+A0A5B9DCS6	1041930.Mtc_1080	2.2e-83	317.0	11	549	17	514	35.4	75.3	65.1
+A0A5B9DDS5	868131.MSWAN_0503	1.1e-117	431.4	128	953	64	820	34.6	84.6	90.6
+A0A5B9DEP7	1343739.PAP_06530	3.5e-73	283.1	18	524	6	492	36.7	72.0	63.7
+A0A5B9DES3	882083.SacmaDRAFT_1972	2.2e-99	370.9	99	949	2	805	31.7	70.1	80.2
+A0A5B9DES9	70601.3257700	4.1e-60	240.0	16	839	14	711	29.0	98.1	97.6
+A0A5B9DG59	391623.TERMP_01511	4.1e-32	146.7	44	671	59	701	24.7	85.1	85.2
+## 18 queries scanned
+## Total time (seconds): 0.016093015670776367
+## Rate: 1118.50 q/s
