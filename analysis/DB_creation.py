@@ -74,11 +74,12 @@ else:  # si le connexion réussie
                     arcog_response = requests.get(url_arcog)
                     arcog_response.raise_for_status()  # If the response was successful, no Exception will be raised
                 
-                except HTTPError as http_err:
+                except Exception as http_err:
                     print(f'HTTP error occurred: {http_err}')  # Python 3.6
+                    print("retrying")
                     time.sleep(1)
                     arcog_response = None
-
+                    
             Embl_file = arcog_response.text.split("\n")
             if arcog_response.text == "":  # Unfortunately if obsolete do not return error but empty file 
                 obsolete.append(id_uniprot)
@@ -109,10 +110,13 @@ else:  # si le connexion réussie
                         seq_response = requests.get(url_seq)
                         seq_response.raise_for_status() # If the response was successful, no Exception will be raised
                     
-                    except HTTPError as http_err:
-                        print(f'HTTP error occurred: {http_err}')  # Python 3.6
+                    except Exception as http_err:
+                        print(f'HTTP error occurred: {http_err}')
+                        print("retrying")
+                        # Python 3.6
                         time.sleep(1)
                         seq_response = None
+
                                 
                 fasta = seq_response.text
                 if fasta != '':
@@ -142,8 +146,8 @@ else:  # si le connexion réussie
                    "as proteins_count FROM proteins_cog NATURAL JOIN strain_proteins GROUP BY id_cog;")
     # strain and protein cog by cog
 	
-    obsolete = rootpath / f"analysis/results/{args.name}.txt"
-    obsolete_file = open(obsolete, "w")
+    obsolete_path = rootpath / f"analysis/results/{args.name}.txt"
+    obsolete_file = open(obsolete_path, "w")
     for proteins in obsolete:
         obsolete_file.write(proteins + "\n")
     obsolete_file.close()

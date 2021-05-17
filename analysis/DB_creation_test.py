@@ -13,8 +13,9 @@ rootpath = Path(__file__).resolve().parent.parent #Get root path of project
 parser = argparse.ArgumentParser(description='Database Creation')
 parser.add_argument('--helicasefile', '-f', type=str,
                     help="tsv file with CGBD id associated to uniprot protein id ")
-parser.add_argument('--arcogs', '-a', type = str, help = "tsv file with id_cogs descriptions and type"
-                                                                           " from eggnog")
+parser.add_argument('--arcogs', '-a', type = str, help = "tsv file with id_cogs descriptions and type")
+parser.add_argument('--obsolete', '-o', type = str, help = "tsv file with id_cogs descriptions and type")
+
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 
 args = parser.parse_args()
@@ -49,8 +50,8 @@ else:  # si le connexion réussie
             proteins_file_count += 1
         print("Number of proteins in the helicase file : ", proteins_file_count)
     
-    obsolete = rootpath / "analysis/results/obsolete_proteins.txt"
-    with open(obsolete, "r") as fh:
+
+    with open(args.obsolete, "r") as fh:
         obsolete_proteins_count = 0
         for protein in fh:
             obsolete_proteins_count += 1
