@@ -75,8 +75,8 @@ else:  # si le connexion réussie
                     arcog_response = requests.get(url_arcog)
                     arcog_response.raise_for_status()  # If the response was successful, no Exception will be raised
                 
-                except Exception as http_err:
-                    print(f'HTTP error occurred: {http_err}')  # Python 3.6
+                except Exception as err:
+                    print(f'An error occurred: {err}')  # Python 3.6
                     print("retrying")
                     time.sleep(1)
                     arcog_response = None
@@ -111,8 +111,8 @@ else:  # si le connexion réussie
                         seq_response = requests.get(url_seq)
                         seq_response.raise_for_status() # If the response was successful, no Exception will be raised
                     
-                    except Exception as http_err:
-                        print(f'HTTP error occurred: {http_err}')
+                    except Exception as err:
+                        print(f'An error occurred: {err}')
                         print("retrying")
                         # Python 3.6
                         time.sleep(1)
