@@ -14,10 +14,10 @@ parser = argparse.ArgumentParser(description='Database Creation')
 parser.add_argument('--helicasefile', '-f', type=str,
                     help="tsv file with CGBD id associated to uniprot protein id ")
 parser.add_argument('--arcogs', '-a', type = str, help = "tsv file with id_cogs descriptions and type")
-parser.add_argument('--obsolete', '-o', type = str, help = "tsv file with id_cogs descriptions and type")
-
+parser.add_argument('--host', '-o', type = str, help = "host connection")
+parser.add_argument('--obsolete', '-s', type = str, help = "file of obsolete proteins")
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
-
+parser.add_argument('--multiple', '-m', type=str, required=False, default='multiple_status', help='filename for multiple status proteins')
 args = parser.parse_args()
 ###############################################################################################
 
@@ -29,7 +29,7 @@ Run this after running the pipeline_helicase.py file and or running the Mapped_a
 
 try:
     # try connection the database
-    conn = mc.connect(host='localhost',
+    conn = mc.connect(host=args.host,
                       database=args.database,
                       user=config.BD_USER,  # BD_USER by default in directroy configurations
                       password=config.BD_PASSWORD)  # BD_PASSEWORD by default in directory configurations
@@ -72,7 +72,7 @@ else:  # si le connexion réussie
      # Test if there's the same amount of proteins in the database and in the helicase file
     print("Number of proteins in database equals to protéins in file minus the obsolete?", proteins_file_count - obsolete_proteins_count  == len(proteins_NA_table) + len(proteins_cog_table))
 
-    print("Note : id_uniprot obsolete are not inserted into the database and are written in the following file results/obsolete_proteins.txt")
+    print("Note : obsolete id_uniprot are not inserted into the database and are written in the following file results/obsolete_proteins.txt")
 
     # Same number but some proteins can be in double ( Distinct in the previous request )
     print("\nMultiple Status ")
@@ -90,13 +90,13 @@ else:  # si le connexion réussie
     # Retrieve proteins with multiple status
     cursor.execute("SELECT id_uniprot FROM multiple_status WHERE multiple > 1")
     results = cursor.fetchall()
-    print("proteins with multiple status have been written in the following file results/multiple_status.txt")
     
-    multiplepath = rootpath / "analysis/results/multiple_status.txt"
+    multiplepath = rootpath / f"analysis/results/{args.multiple}.txt"
     multiple = open(multiplepath, "w")
     for proteins in results:
         multiple.write(proteins[0] + "\n")
     multiple.close()
+    print(f"proteins with multiple status have been written in the following file results/{args.multiple}.txt")
 
     print("\nCogs")
 
