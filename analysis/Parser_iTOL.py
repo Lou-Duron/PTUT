@@ -6,15 +6,18 @@ from configurations import config
 import requests
 import random
 import argparse
+import time
 from pathlib import Path
 
 ################################################################################################
 parser = argparse.ArgumentParser(description='Parser_iTOL') 
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
+parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
+parser.add_argument('--table', '-t', type = str, help = "table to use")
 args = parser.parse_args()
 ###############################################################################################
 try:
-    conn = mc.connect(host='localhost',
+    conn = mc.connect(host=args.host,
     user=config.BD_USER,
     password=config.BD_PASSWORD) 
 
@@ -30,18 +33,33 @@ else:
     values = []
     colors = []
     cursor.execute(f"USE {args.database}")
-    cursor.execute("SELECT id_uniprot, id_cog FROM proteins_cog")
+    cursor.execute("SELECT id_uniprot, id_cog FROM " + args.table)
     for el in cursor:
         if el[1]!="NA":
             if el[0] not in dico.keys():
                 dico[el[0]]=[]
             dico[el[0]].append(el[1])
 
+    for key in dico.keys():
+        for val in dico[key]:
+            if val not in values:
+                values.append(val)
+
     for ID in dico.keys():
         firstline = False
         url_arcog = "https://www.uniprot.org/uniprot/"+ID+".txt"
-        arcog_response = requests.get(url_arcog)
-        arcog_response.raise_for_status()
+        arcog_response = None
+        while arcog_response is None: # retry if exception occurs 
+            try: 
+                arcog_response = requests.get(url_arcog)
+                arcog_response.raise_for_status()  # If the response was successful, no Exception will be raised
+                
+            except Exception as err:
+                print(f'An error occurred: {err}')  # Python 3.6
+                print("retrying")
+                time.sleep(1)
+                arcog_response = None
+                    
         Embl_file = arcog_response.text.split("\n")
         for line_arc in Embl_file: #file
             if(firstline == False):
@@ -63,7 +81,6 @@ else:
                     name.strip(" ")
                     name += "'"
                     if name not in dicoName.keys():
-                        print(name)
                         dicoName[name] = []
                     for id in dico[ID]:
                         if id not in dicoName[name]:
@@ -72,8 +89,8 @@ else:
     for el in range(len(values)):
         colors.append("rgb("+str(random.randrange(255))+","+str(random.randrange(255))+","+str(random.randrange(255))+")")
 
-    with open(path + "/NCBI_tree.txt", "w") as tree:
-        with open(path + "/iTOL_annotation.txt", "w") as anot:
+    with open(path / "NCBI_tree.txt", "w") as tree:
+        with open(path / "iTOL_annotation.txt", "w") as anot:
             anot.write("DATASET_EXTERNALSHAPE"+"\n")
             anot.write("SEPARATOR TAB"+"\n")
             anot.write("DATASET_LABEL"+"\t"+"Annotation"+"\n")
