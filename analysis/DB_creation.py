@@ -19,6 +19,7 @@ parser.add_argument('--helicasefile', '-f', type=str,
                     help="tsv file with CGBD id associated to uniprot protein id ")
 parser.add_argument('--arcogs', '-a', type=str, required=False, help="tsv file with id_cogs descriptions and type from "
                                                                      "eggnog")
+parser.add_argument('--host', '-o', type=str, required=False, help="host")
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 parser.add_argument('--drop', '-d', required=False, action="store_true", help='drop all tables')
 parser.add_argument('--name', '-n', type=str, required=False, default='obsolete', help='filename of obsolete uniprot id (default obsolete.txt)')
@@ -28,7 +29,7 @@ args = parser.parse_args()
 
 try:
     # try connection the database
-    conn = mc.connect(host='localhost',
+    conn = mc.connect(host=args.host,
     user=config.BD_USER,  # BD_USER by default in directroy configurations
     password=config.BD_PASSWORD)  # BD_PASSEWORD by default in directory configurations
 
