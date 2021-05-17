@@ -189,7 +189,7 @@ else:  # if connection succeed
             obsolete_file.write(proteins + "\n")
         obsolete_file.close()
 
-
+        conn.commit()
 
     conn.commit()
     cursor.close()  # close cursor
