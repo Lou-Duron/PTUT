@@ -92,10 +92,13 @@ else:  # si le connexion réussie
                         arcogs.append(arcog[1])
                 if arcogs: 
                     for el in arcogs:
-                        cursor.execute("INSERT INTO proteins_cog (id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, el))
+                        cursor.execute("INSERT IGNORE INTO proteins_cog (id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, el))
                         # Insertion for proteins with cog
+                    conn.commit()
                 else: 
-                    cursor.execute("INSERT INTO proteins_cog (id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
+                    cursor.execute("INSERT IGNORE INTO proteins_cog (id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
+                    conn.commit()
+
                     # Instertion for proteins with no cog
                     # Since NULL is not authorized as primary key, string 'NA' is used
 
@@ -123,28 +126,42 @@ else:  # si le connexion réussie
                 if fasta != '':
                     fasta = fasta.split("\n", 1)
                     seq = fasta[1].replace("\n", '')
-                    cursor.execute("INSERT INTO strain_proteins (strain, id_uniprot, sequence) VALUES (%s,%s,%s)",
+                    cursor.execute("INSERT IGNORE INTO strain_proteins (strain, id_uniprot, sequence) VALUES (%s,%s,%s)",
                                 (strain, id_uniprot, seq))  # Table with strain and proteins and sequence
+                    conn.commit()
+            
                 else:
-                    cursor.execute("INSERT INTO strain_proteins (strain, id_uniprot, sequence) VALUES (%s,%s,%s)",
+                    cursor.execute("INSERT IGNORE INTO strain_proteins (strain, id_uniprot, sequence) VALUES (%s,%s,%s)",
                                 (strain, id_uniprot, None))  # Table with strain and proteins and sequence
+                    conn.commit()
+            
 
             
     with open(args.arcogs, "r") as fa:  # Reading of cog description
         tsv_arcogs = csv.reader(fa, delimiter="\t")
         for line in tsv_arcogs:
             if line[3] == "":
-                cursor.execute("INSERT INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
+                cursor.execute("INSERT IGNORE INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
                                (line[1], line[2], None))
+                conn.commit()
+
             else:
-                cursor.execute("INSERT INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
+                cursor.execute("INSERT IGNORE INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
                                (line[1], line[2], line[3]))
+                conn.commit()
+
+
     
     # Views
     cursor.execute("CREATE VIEW multiple_status AS SELECT id_uniprot, count(*) AS multiple FROM proteins_cog GROUP BY "
                    "id_uniprot;")  # Proteins with multiple cogs associated
+    conn.commit()
+
     cursor.execute("CREATE VIEW paralogy AS SELECT id_cog, count(strain) AS strain_count, count(id_uniprot) "
                    "as proteins_count FROM proteins_cog NATURAL JOIN strain_proteins GROUP BY id_cog;")
+    conn.commit()
+
+    
     # strain and protein cog by cog
 	
     obsolete_path = rootpath / f"analysis/results/{args.name}.txt"

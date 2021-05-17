@@ -14,6 +14,8 @@ parser.add_argument('--database', '-b', type = str, help = "database to connect 
 parser.add_argument('--name', '-n', type=str, required=False, default='seqtosearch', help='filename')
 parser.add_argument('--all', '-a', required=False, action="store_true", help='get all proteins')
 parser.add_argument('--partial', '-p',required=False, action="store_true", help='get only proteins without arcogs')
+parser.add_argument('--taxon', '-t',required=False, type = str, help='get proteins from desired taxon')
+
 args = parser.parse_args()
 ###############################################################################################
 
@@ -39,6 +41,10 @@ else: # if connection succeed
     
     if args.all:
         cursor.execute("SELECT DISTINCT(S.id_uniprot), sequence FROM proteins_cog AS P, strain_proteins AS S WHERE P.id_uniprot = S.id_uniprot AND sequence IS NOT NULL;")
+        results = cursor.fetchall() 
+
+    if args.taxon:
+        cursor.execute(f"SELECT DISTINCT(S.id_uniprot), sequence FROM proteins_cog AS P, strain_proteins AS S WHERE P.id_uniprot = S.id_uniprot AND sequence IS NOT NULL AND S.strain REGEXP '{args.taxon}';")
         results = cursor.fetchall() 
 
     filepath = rootpath / f"analysis/results/{args.name}.fa"
