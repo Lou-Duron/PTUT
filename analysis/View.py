@@ -36,4 +36,17 @@ else:
     if args.protein_nb != None :
         request += f"WHERE s.id_cog IN (SELECT id_cog FROM paralogy WHERE proteins_count > {str(args.protein_nb)})"
     cursor.execute(request)
+    cursor.execute(f"SELECT id_uniprot, id_cog FROM {args.name}")
+    id_uniprot = []
+    id_cog = []
+    rows = 0
+    for el in cursor:
+        rows += 1
+        if el[0] not in id_uniprot:
+            id_uniprot.append(el[0])
+        if el[1] not in id_cog:
+            if el[1] != 'NA':
+                id_cog.append(el[1])
+    print(f"Done :\n{rows} rows in set\n{len(id_uniprot)} proteins\n{len(id_cog)} distinct arcogs")
+
 
