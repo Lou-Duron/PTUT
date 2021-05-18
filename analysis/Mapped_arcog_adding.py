@@ -14,13 +14,11 @@ import time
 parser = argparse.ArgumentParser(description='Add mapped arcogs to database and remove previous results')
 parser.add_argument('--database', '-b', type=str, help="database to connect to")
 parser.add_argument('--table', '-t',  type=str, help="the name you want to give to your table")
-parser.add_argument('--type', '-y', type=str, default='regular',
-                    help="mapper if your arcog file comes from eggnog mapper, regular if the file only contains the "
-                         "name of the organisme and the name of the sequence")
-parser.add_argument('--arcogs', '-a', type=str, required=False, help="your arcog file")
+parser.add_argument('--mapper', '-m', type=str, required=False, help="your arcog file from the eggnog mapper")
 parser.add_argument('--helicasefile', '-f', type=str, required=False,
                     help="tsv file with CGBD id associated to uniprot protein id ")
-
+parser.add_argument('--adding' '-a', type=str, required=False, action="store_true",
+                    help='if you want to add results to an existing table')
 parser.add_argument('--drop', '-d', required=False, action="store_true", help='drop all tables')
 parser.add_argument('--name', '-n', type=str, required=False, default='obsolete',
                     help='filename of obsolete uniprot id (default obsolete.txt)')
@@ -41,8 +39,6 @@ except mc.Error as err:
 
 else:
     cursor = conn.cursor()
-
-    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {args.database}")
     cursor.execute(f"USE {args.database}")
 
     if args.drop:
@@ -51,15 +47,18 @@ else:
         cursor.execute(f"DROP VIEW IF EXISTS `multiple_status_{args.table}`")
         cursor.execute(f"DROP TABLE IF EXISTS `strain_proteins_{args.table}`")
 
-    if args.type == 'mapper':
+    if args.mapper is not None:
         cursor.execute(f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30), `id_cog` "
                        f"VARCHAR(30), `e_value` FLOAT, `taxon_id` VARCHAR(30), `taxon_name` VARCHAR(100), "
-                       f"`max_annotation_level` VARCHAR(100), `category` VARCHAR(5), `go` TEXT, "
-                       f"PRIMARY KEY(`id_uniprot`, `id_cog`, `taxon_id`));")
+                       f"`max_annotation_level` VARCHAR(100), `category` VARCHAR(5), `go` TEXT, `kegg_ko` VARCHAR(30),"
+                       f"`kegg_pathway` VARCHAR(30), `kegg_module` VARCHAR(30), `kegg_reaction` VARCHAR(30), "
+                       f"`kegg_rclass` VARCHAR(30), PRIMARY KEY(`id_uniprot`, `id_cog`, `taxon_id`));")
         cursor.execute(
             f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.table}`(`strain` VARCHAR(30), `id_uniprot` "
             f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
-        with open(args.arcogs, "r") as fh:
+
+
+        with open(args.mapper, "r") as fh:
             tsv_emapper = csv.reader(fh, delimiter="\t")
             motif = re.compile(r"(arC.*@2157)")
             for line in tsv_emapper:
@@ -75,30 +74,43 @@ else:
                         taxon_id = re.search("@.*\|", el).group(0)[1:][:-1]
                         taxon_name = el.split("|")[1]
                         max_annotation_level = line[5].split("|")[0]
+                        category = line[6]
+                        kegg_ko = line[11]
+                        kegg_pathway = line[12]
+                        kegg_module = line[13]
+                        kegg_reaction = line[14]
+                        kegg_rclass = line[15]
                         if max_annotation_level == taxon_id:
                             max_annotation_level = "true"
                         else:
                             max_annotation_level = "false"
                         if go == "-":
                             cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} (id_uniprot, id_cog, e_value,"
-                                           f" taxon_id, taxon_name, max_annotation_level, category, go) "
-                                           f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (id_uniprot, id_cog_mapper, e_value,
-                                                                                 taxon_id, taxon_name,
-                                                                                 max_annotation_level, category, 'NA'))
+                                           f" taxon_id, taxon_name, max_annotation_level, category, go, kegg_ko, "
+                                           f"kegg_pathway, kegg_module, kegg_reaction, kegg_rclass) "
+                                           f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                                           (id_uniprot, id_cog_mapper, e_value, taxon_id, taxon_name,
+                                            max_annotation_level, category, 'NA', kegg_ko, kegg_pathway, kegg_module,
+                                            kegg_reaction, kegg_rclass))
                         else:
                             cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} (id_uniprot, id_cog, e_value,"
-                                           f" taxon_id, taxon_name, max_annotation_level, category, go) "
-                                           f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (id_uniprot, id_cog_mapper, e_value,
-                                                                                 taxon_id, taxon_name,
-                                                                                 max_annotation_level, category, go))
+                                           f" taxon_id, taxon_name, max_annotation_level, category, go, kegg_ko, "
+                                           f"kegg_pathway, kegg_module, kegg_reaction, kegg_rclass) "
+                                           f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                                           (id_uniprot, id_cog_mapper, e_value, taxon_id, taxon_name,
+                                            max_annotation_level, category, go, kegg_ko, kegg_pathway, kegg_module,
+                                            kegg_reaction, kegg_rclass))
 
-    if args.type == 'regular':
-        cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),"
-            f"PRIMARY KEY(`id_uniprot`, `id_cog`));")
-        cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.table}`(`strain` VARCHAR(30), `id_uniprot` "
-            f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
+
+    elif args.helicasefile is not None:
+
+        if not args.add:
+            cursor.execute(
+                f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),"
+                f"PRIMARY KEY(`id_uniprot`, `id_cog`));")
+            cursor.execute(
+                f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.table}`(`strain` VARCHAR(30), `id_uniprot` "
+                f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
 
         with open(args.helicasefile, "r") as fh:  # reading tsv entry file using args module
             tsv_helicases = csv.reader(fh, delimiter="\t")
@@ -132,12 +144,20 @@ else:
                             arcogs.append(arcog[1])
                     if arcogs:
                         for el in arcogs:
-                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
-                                           f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, el))
+                            if args.add:
+                                cursor.execute(f"INSERT IGNORE INTO proteins_cog (id_uniprot, id_cog) "
+                                               f"VALUES (%s,%s)", (id_uniprot, el))
+                            else:
+                                cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
+                                               f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, el))
                         conn.commit()
                     else:
-                        cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
-                                       f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
+                        if args.add:
+                            cursor.execute(f"INSERT IGNORE INTO proteins_cog (id_uniprot, id_cog) "
+                                           f"VALUES (%s,%s)", (id_uniprot, 'NA'))
+                        else:
+                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
+                                           f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
                         conn.commit()
 
                         # Instertion for proteins with no cog
@@ -167,8 +187,13 @@ else:
                     if fasta != '':
                         fasta = fasta.split("\n", 1)
                         seq = fasta[1].replace("\n", '')
-                        cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} (strain, id_uniprot, sequence)"
-                                       f" VALUES (%s,%s,%s)", (strain, id_uniprot, seq))
+                        if args.add:
+                            cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
+                                           f"(strain, id_uniprot, sequence) VALUES (%s,%s,%s)",
+                                           (strain, id_uniprot, seq))
+                        else:
+                            cursor.execute( f"INSERT IGNORE INTO strain_proteins (strain, id_uniprot, sequence) "
+                                            f"VALUES (%s,%s,%s)", (strain, id_uniprot, seq))
                         conn.commit()
                     else:
                         cursor.execute(f"INSERT INGORE INTO strain_proteins_{args.table} (strain, id_uniprot, sequence)"
