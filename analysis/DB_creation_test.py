@@ -13,11 +13,11 @@ rootpath = Path(__file__).resolve().parent.parent #Get root path of project
 parser = argparse.ArgumentParser(description='Database Creation')
 parser.add_argument('--helicasefile', '-f', type=str,
                     help="tsv file with CGBD id associated to uniprot protein id ")
-parser.add_argument('--arcogs', '-a', type = str, help = "tsv file with id_cogs descriptions and type")
 parser.add_argument('--host', '-o', type = str, help = "host connection")
 parser.add_argument('--obsolete', '-s', type = str, help = "file of obsolete proteins")
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 parser.add_argument('--multiple', '-m', type=str, required=False, default='multiple_status', help='filename for multiple status proteins')
+parser.add_argument('--arcogs', '-a', type = str, required = False, help = "tsv file with id_cogs descriptions and type")
 args = parser.parse_args()
 ###############################################################################################
 
@@ -114,19 +114,20 @@ else:  # si le connexion réussie
     print("\nAnnotations file")
 
     # Test number of arcogs in the annotation file
-    with open(args.arcogs, "r") as fh:
-        arcogs_file_count = 0
-        for line in fh:
-            arcogs_file_count += 1
-        print("Number of arcogs in the annotation file : ", arcogs_file_count)
+    if args.arcogs:
+		with open(args.arcogs, "r") as fh:
+			arcogs_file_count = 0
+			for line in fh:
+				arcogs_file_count += 1
+			print("Number of arcogs in the annotation file : ", arcogs_file_count)
 
-    # Test number of arcogs in the database
-    cursor.execute("SELECT id_cog FROM cog")
-    arcogs_table = cursor.fetchall()
-    print("Number of arcogs in the table cog : ", len(arcogs_table))
+		# Test number of arcogs in the database
+		cursor.execute("SELECT id_cog FROM cog")
+		arcogs_table = cursor.fetchall()
+		print("Number of arcogs in the table cog : ", len(arcogs_table))
 
-    # Test if there's the same amount of arcogs in the database and in the annotation file
-    print("Number of arcogs in database equals to arcogs in file", arcogs_file_count == len(arcogs_table))
+		# Test if there's the same amount of arcogs in the database and in the annotation file
+		print("Number of arcogs in database equals to arcogs in file", arcogs_file_count == len(arcogs_table))
     
     print( "======================================================================================================================")
 

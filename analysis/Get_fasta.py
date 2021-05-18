@@ -11,6 +11,7 @@ from configurations import config
 ################################################################################################
 parser = argparse.ArgumentParser(description='Fasta File for eggnog mapper search')
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
+parser.add_argument('--host', '-o', type = str, help = "database host")
 parser.add_argument('--name', '-n', type=str, required=False, default='seqtosearch', help='filename')
 parser.add_argument('--all', '-a', required=False, action="store_true", help='get all proteins')
 parser.add_argument('--partial', '-p',required=False, action="store_true", help='get only proteins without arcogs')
@@ -23,7 +24,7 @@ rootpath = Path(__file__).resolve().parent.parent #Get root path of project
 
 try:
     # try connection the database
-    conn = mc.connect(host = 'localhost',
+    conn = mc.connect(host = args.host,
     database = args.database, 
     user = config.BD_USER, # BD_USER by default in directroy configurations 
     password= config.BD_PASSWORD) # BD_PASSEWORD by default in directory configurations
