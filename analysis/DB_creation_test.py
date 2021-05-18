@@ -16,6 +16,7 @@ parser.add_argument('--helicasefile', '-f', type=str,
 parser.add_argument('--host', '-o', type = str, help = "host connection")
 parser.add_argument('--obsolete', '-s', type = str, help = "file of obsolete proteins")
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
+parser.add_argument('--table', '-t',  type=str, help="the name you want to give to your table")
 parser.add_argument('--multiple', '-m', type=str, required=False, default='multiple_status', help='filename for multiple status proteins')
 parser.add_argument('--arcogs', '-a', type = str, required = False, help = "tsv file with id_cogs descriptions and type")
 args = parser.parse_args()
@@ -60,13 +61,13 @@ else:  # si le connexion réussie
     print("Number of obsolete proteins : ", obsolete_proteins_count)
 
     # Test proteins number in the database that have an associated cog
-    cursor.execute("SELECT DISTINCT id_uniprot FROM proteins_cog  WHERE id_cog != 'NA'")
+    cursor.execute(f"SELECT DISTINCT id_uniprot FROM proteins_cog_{args.table}  WHERE id_cog != 'NA';")
     proteins_cog_table = cursor.fetchall()
     print("Number of proteins in the database that have been associated to one or multiple arcog : ",
           len(proteins_cog_table))
 
     # Test proteins number in the database that doesn't have an associated cog
-    cursor.execute("SELECT id_uniprot FROM proteins_cog WHERE id_cog = 'NA'")
+    cursor.execute(f"SELECT id_uniprot FROM proteins_cog_{args.table} WHERE id_cog = 'NA';")
     proteins_NA_table = cursor.fetchall()
     print("Number of proteins in the database that doesn't have an associated cog : ", len(proteins_NA_table))
      # Test if there's the same amount of proteins in the database and in the helicase file
@@ -78,17 +79,17 @@ else:  # si le connexion réussie
     print("\nMultiple Status ")
 
     # Test number of proteins that have a single status
-    cursor.execute("SELECT COUNT(id_uniprot) FROM multiple_status WHERE multiple = 1")
+    cursor.execute(f"SELECT COUNT(id_uniprot) FROM multiple_status_{args.table} WHERE multiple = 1;")
     result_single_status = cursor.fetchall()
     print("Number of proteins with single status : ", result_single_status[0][0])
 
     # Test number of proteins that have a multiple status
-    cursor.execute("SELECT COUNT(id_uniprot) FROM multiple_status WHERE multiple > 1")
+    cursor.execute(f"SELECT COUNT(id_uniprot) FROM multiple_status_{args.table} WHERE multiple > 1;")
     result_multiple_status = cursor.fetchall()
     print("Number of proteins with multiple status : ", result_multiple_status[0][0])
 
     # Retrieve proteins with multiple status
-    cursor.execute("SELECT id_uniprot FROM multiple_status WHERE multiple > 1")
+    cursor.execute(f"SELECT id_uniprot FROM multiple_status_{args.table} WHERE multiple > 1;")
     results = cursor.fetchall()
     
     multiplepath = rootpath / f"analysis/results/{args.multiple}.txt"
@@ -102,12 +103,12 @@ else:  # si le connexion réussie
 
     # Test number of cogs associated with our proteins that are type S
     cursor.execute("SELECT count(category) FROM cog WHERE category = 'S' AND id_cog IN (SELECT id_cog FROM proteins_cog"
-                   " WHERE id_cog != 'NA')")
+                   " WHERE id_cog != 'NA');")
     result_type_S = cursor.fetchall()
     print("Number of proteins which are associated with a type S arcog : ", result_type_S[0][0])
 
     # Test number of unique COG in our database
-    cursor.execute("SELECT COUNT(DISTINCT id_cog) FROM proteins_cog;")
+    cursor.execute(f"SELECT COUNT(DISTINCT id_cog) FROM proteins_cog_{args.table};")
     reslut_unique_cog = cursor.fetchall()
     print("Number of unique cog associated to our proteins : ", reslut_unique_cog[0][0]-1)
 

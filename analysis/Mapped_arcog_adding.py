@@ -13,12 +13,13 @@ import time
 ################################################################################################
 parser = argparse.ArgumentParser(description='Add mapped arcogs to database and remove previous results')
 parser.add_argument('--database', '-b', type=str, help="database to connect to")
-parser.add_argument('--table', '-t',  type=str, help="the name you want to give to your table")
+parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
+parser.add_argument('--arcogs', '-a', type=str, required=False, help="tsv file with id_cogs descriptions and type from "
+                                                                     "eggnog")
+parser.add_argument('--table', '-t',  type=str, required=True, help="the name you want to give to your table")
 parser.add_argument('--mapper', '-m', type=str, required=False, help="your arcog file from the eggnog mapper")
 parser.add_argument('--helicasefile', '-f', type=str, required=False,
                     help="tsv file with CGBD id associated to uniprot protein id ")
-parser.add_argument('--adding' '-a', type=str, required=False, action="store_true",
-                    help='if you want to add results to an existing table')
 parser.add_argument('--drop', '-d', required=False, action="store_true", help='drop all tables')
 parser.add_argument('--name', '-n', type=str, required=False, default='obsolete',
                     help='filename of obsolete uniprot id (default obsolete.txt)')
@@ -29,7 +30,7 @@ rootpath = Path(__file__).resolve().parent.parent
 
 try:
     # try connection the database
-    conn = mc.connect(host='localhost',
+    conn = mc.connect(host=args.host,
                       database=args.database,
                       user=config.BD_USER,  # BD_USER by default in directroy configurations
                       password=config.BD_PASSWORD)  # BD_PASSEWORD by default in directory configurations
@@ -39,13 +40,14 @@ except mc.Error as err:
 
 else:
     cursor = conn.cursor()
+
+    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {args.database}")
     cursor.execute(f"USE {args.database}")
 
     if args.drop:
         cursor.execute(f"DROP TABLE IF EXISTS `proteins_cog_{args.table}`")
         cursor.execute(f"DROP VIEW IF EXISTS `paralogy_{args.table}`")
         cursor.execute(f"DROP VIEW IF EXISTS `multiple_status_{args.table}`")
-        cursor.execute(f"DROP TABLE IF EXISTS `strain_proteins_{args.table}`")
 
     if args.mapper is not None:
         cursor.execute(f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30), `id_cog` "
@@ -102,21 +104,19 @@ else:
                                             kegg_reaction, kegg_rclass))
 
 
-    elif args.helicasefile is not None:
+    if args.helicasefile is not None:
 
-        if not args.add:
-            cursor.execute(
-                f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),"
-                f"PRIMARY KEY(`id_uniprot`, `id_cog`));")
-            cursor.execute(
-                f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.table}`(`strain` VARCHAR(30), `id_uniprot` "
-                f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
+        cursor.execute(
+            f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),"
+            f"PRIMARY KEY(`id_uniprot`, `id_cog`));")
+        cursor.execute(
+            f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.table}`(`strain` VARCHAR(30), `id_uniprot` "
+            f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
 
         with open(args.helicasefile, "r") as fh:  # reading tsv entry file using args module
             tsv_helicases = csv.reader(fh, delimiter="\t")
             obsolete = []
             for line in tsv_helicases:  # File with uniprot id and CBI id
-                print(line[1])
                 id_uniprot = line[1]
                 # Arcogs retrieval
                 arcogs = []
@@ -144,20 +144,12 @@ else:
                             arcogs.append(arcog[1])
                     if arcogs:
                         for el in arcogs:
-                            if args.add:
-                                cursor.execute(f"INSERT IGNORE INTO proteins_cog (id_uniprot, id_cog) "
-                                               f"VALUES (%s,%s)", (id_uniprot, el))
-                            else:
-                                cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
-                                               f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, el))
+                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} (id_uniprot, id_cog) "
+                                           f"VALUES (%s,%s)", (id_uniprot, el))
                         conn.commit()
                     else:
-                        if args.add:
-                            cursor.execute(f"INSERT IGNORE INTO proteins_cog (id_uniprot, id_cog) "
-                                           f"VALUES (%s,%s)", (id_uniprot, 'NA'))
-                        else:
-                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
-                                           f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
+                        cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
+                                       f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
                         conn.commit()
 
                         # Instertion for proteins with no cog
@@ -187,13 +179,9 @@ else:
                     if fasta != '':
                         fasta = fasta.split("\n", 1)
                         seq = fasta[1].replace("\n", '')
-                        if args.add:
-                            cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
-                                           f"(strain, id_uniprot, sequence) VALUES (%s,%s,%s)",
-                                           (strain, id_uniprot, seq))
-                        else:
-                            cursor.execute( f"INSERT IGNORE INTO strain_proteins (strain, id_uniprot, sequence) "
-                                            f"VALUES (%s,%s,%s)", (strain, id_uniprot, seq))
+                        cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
+                                       f"(strain, id_uniprot, sequence) VALUES (%s,%s,%s)",
+                                       (strain, id_uniprot, seq))
                         conn.commit()
                     else:
                         cursor.execute(f"INSERT INGORE INTO strain_proteins_{args.table} (strain, id_uniprot, sequence)"
@@ -207,6 +195,20 @@ else:
         obsolete_file.close()
 
         conn.commit()
+
+    with open(args.arcogs, "r") as fa:  # Reading of cog description
+        tsv_arcogs = csv.reader(fa, delimiter="\t")
+        for line in tsv_arcogs:
+            if line[3] == "":
+                cursor.execute("INSERT IGNORE INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
+                               (line[1], line[2], None))
+                conn.commit()
+
+            else:
+                cursor.execute("INSERT IGNORE INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
+                               (line[1], line[2], line[3]))
+                conn.commit()
+
     # Views
     cursor.execute(
         f"CREATE VIEW multiple_status_{args.table} AS SELECT id_uniprot, count(*) AS multiple "
