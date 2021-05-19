@@ -28,12 +28,21 @@ else:
     cursor = conn.cursor()
     cursor.execute(f"USE {args.database}")
     cursor.execute(f"DROP VIEW IF EXISTS {args.name}")
-    request = f"CREATE VIEW {args.name} AS SELECT f.id_uniprot, f.id_cog FROM proteins_cog_{args.first} f LEFT JOIN proteins_cog_{args.second} s ON f.id_uniprot = s.id_uniprot " 
+    request = f"CREATE VIEW {args.name} AS "
+    "SELECT f.id_uniprot, f.id_cog "
+    "FROM proteins_cog_{args.first} f "
+    "LEFT JOIN proteins_cog_{args.second} s ON f.id_uniprot = s.id_uniprot " 
     if args.protein_nb is not None :
-        request += f"WHERE f.id_cog IN (SELECT id_cog FROM paralogy_{args.first} WHERE proteins_count > {str(args.protein_nb)})" 
-    request += f"UNION SELECT s.id_uniprot, s.id_cog FROM proteins_cog_{args.first} f RIGHT JOIN proteins_cog_{args.second} s ON f.id_uniprot = s.id_uniprot "
+        request += f"WHERE f.id_cog IN ("
+        "SELECT id_cog FROM paralogy_{args.first} "
+        "WHERE proteins_count > {str(args.protein_nb)})" 
+    request += f"UNION SELECT s.id_uniprot, s.id_cog "
+    "FROM proteins_cog_{args.first} f "
+    "RIGHT JOIN proteins_cog_{args.second} s ON f.id_uniprot = s.id_uniprot "
     if args.protein_nb is not None :
-        request += f"WHERE s.id_cog IN (SELECT id_cog FROM paralogy_{args.second} WHERE proteins_count > {str(args.protein_nb)})"
+        request += f"WHERE s.id_cog IN ("
+        "SELECT id_cog FROM paralogy_{args.second} "
+        "WHERE proteins_count > {str(args. protein_nb)})"
     cursor.execute(request)
     
 
@@ -50,5 +59,3 @@ else:
             if el[1] != 'NA':
                 id_cog.append(el[1])
     print(f"Done :\n{rows} rows in set\n{len(id_uniprot)} proteins\n{len(id_cog)} distinct arcogs")
-
-

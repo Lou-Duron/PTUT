@@ -1,0 +1,368 @@
+(
+(
+'archaeon GW2011_AR20':4,
+'archaeon GW2011_AR10':4
+)'unclassified Archaea':4,
+(
+'Candidatus Mancarchaeum acidiphilum':4,
+'Nanoarchaeum equitans':4
+)'DPANN group':4,
+'uncultured archaeon':4,
+(
+'Aciduliprofundum boonei':4,
+(
+'methanogenic archaeon ISO4-H5':4,
+(
+(
+'Candidatus Methanoplasma termitum':4,
+'Candidatus Methanomassiliicoccus intestinalis':4
+)Methanomassiliicoccaceae:4,
+'Candidatus Methanomethylophilus alvus':4
+)Methanomassiliicoccales:4,
+(
+'Thermoplasmatales archaeon':4,
+'Cuniculiplasma divulgatum':4,
+'Picrophilus torridus':4,
+(
+'Ferroplasma acidarmanus fer1':4,
+'Ferroplasma acidiphilum':4
+)Ferroplasma:4,
+(
+'Thermoplasma volcanium':4,
+'Thermoplasma acidophilum':4
+)Thermoplasma:4
+)Thermoplasmatales:4
+)Thermoplasmata:4
+)'Candidatus Thermoplasmatota':4,
+(
+'Candidatus Korarchaeum cryptofilum':4,
+(
+(
+'Candidatus Nitrosocaldus cavascurensis':4,
+(
+'Candidatus Nitrosocosmicus oleophilus':4,
+(
+'Candidatus Nitrososphaera evergladensis SR1':4,
+'Nitrososphaera viennensis EN76':4,
+'Candidatus Nitrososphaera gargensis':4
+)Nitrososphaera:4
+)Nitrososphaeraceae:4
+)Nitrososphaeria:4,
+(
+'Candidatus Nitrosomarinus catalina':4,
+(
+'Nitrosopumilus adriaticus':4,
+'Candidatus Nitrosopumilus sediminis':4,
+'Candidatus Nitrosopumilus koreensis AR1':4,
+'Nitrosopumilus maritimus':4
+)Nitrosopumilus:4
+)Nitrosopumilaceae:4,
+(
+'Candidatus Nitrosopelagicus brevis':4,
+'Candidatus Nitrosotalea devanaterra':4,
+'Candidatus Caldarchaeum subterraneum':4
+)'Thaumarchaeota incertae sedis':4,
+'Cenarchaeum symbiosum':4
+)Thaumarchaeota:4,
+(
+'Fervidicoccus fontis':4,
+(
+'Caldisphaera lagunensis':4,
+'Acidilobus saccharovorans':4
+)Acidilobales:4,
+(
+'Sulfodiicoccus acidiphilus':4,
+'Sulfurisphaera tokodaii':4,
+(
+'Metallosphaera hakonensis JCM 8857 = DSM 7519':4,
+'Metallosphaera cuprina':4,
+'Metallosphaera sedula':4
+)Metallosphaera:4,
+(
+'Acidianus sulfidivorans JP7':4,
+'Acidianus hospitalis':4,
+'Acidianus manzaensis':4,
+'Acidianus brierleyi':4
+)Acidianus:4,
+'Saccharolobus solfataricus':4,
+(
+'Sulfolobus islandicus':4,
+'Sulfolobus acidocaldarius':4
+)Sulfolobus:4
+)Sulfolobaceae:4,
+(
+(
+'Pyrodictium delaneyi':4,
+'Pyrolobus fumarii':4,
+'Hyperthermus butylicus':4
+)Pyrodictiaceae:4,
+(
+'Thermogladius calderae':4,
+'Ignisphaera aggregans':4,
+(
+'Ignicoccus islandicus DSM 13165':4,
+'Ignicoccus hospitalis':4
+)Ignicoccus:4,
+(
+'Aeropyrum camini SY1 = JCM 12091':4,
+'Aeropyrum pernix':4
+)Aeropyrum:4,
+'Thermosphaera aggregans':4,
+(
+'Staphylothermus hellenicus':4,
+'Staphylothermus marinus':4
+)Staphylothermus:4,
+(
+'Desulfurococcus amylolyticus DSM 16532':4,
+'Desulfurococcus mucosus':4
+)Desulfurococcus:4
+)Desulfurococcaceae:4
+)Desulfurococcales:4,
+(
+(
+(
+'Vulcanisaeta moutnovskia':4,
+'Vulcanisaeta distributa':4
+)Vulcanisaeta:4,
+'Caldivirga maquilingensis':4,
+(
+'Pyrobaculum ferrireducens':4,
+'Pyrobaculum calidifontis':4,
+'Pyrobaculum arsenaticum':4,
+'Pyrobaculum oguniense':4,
+'Pyrobaculum neutrophilum':4,
+'Pyrobaculum aerophilum':4,
+'Pyrobaculum islandicum':4
+)Pyrobaculum:4,
+(
+'Thermoproteus uzoniensis':4,
+'Thermoproteus tenax':4
+)Thermoproteus:4
+)Thermoproteaceae:4,
+(
+'Thermofilum uzonense':4,
+'Thermofilum adornatum':4,
+'Thermofilum pendens':4
+)Thermofilum:4
+)Thermoproteales:4
+)Thermoprotei:4
+)'TACK group':4,
+(
+'Methanopyrus kandleri':4,
+(
+'Palaeococcus pacificus DY20341':4,
+(
+'Thermococcus piezophilus':4,
+'Thermococcus eurythermalis':4,
+'Thermococcus guaymasensis DSM 11113':4,
+'Thermococcus celer Vu 13 = JCM 8558':4,
+'Thermococcus onnurineus':4,
+'Thermococcus kodakarensis':4,
+'Thermococcus thioreducens':4,
+'Thermococcus nautili':4,
+'Thermococcus radiotolerans':4,
+'Thermococcus gammatolerans':4,
+'Thermococcus sibiricus':4,
+'Thermococcus siculi':4,
+'Thermococcus pacificus':4,
+'Thermococcus gorgonarius':4,
+'Thermococcus barophilus':4,
+'Thermococcus chitonophagus':4,
+'Thermococcus barossii':4,
+'Thermococcus peptonophilus':4,
+'Thermococcus profundus':4,
+'Thermococcus litoralis':4
+)Thermococcus:4,
+(
+'Pyrococcus kukulkanii':4,
+'Pyrococcus yayanosii':4,
+'Pyrococcus horikoshii':4,
+'Pyrococcus abyssi':4,
+'Pyrococcus furiosus':4
+)Pyrococcus:4
+)Thermococcaceae:4,
+(
+(
+'Geoglobus acetivorans':4,
+'Geoglobus ahangari':4
+)Geoglobus:4,
+'Ferroglobus placidus':4,
+(
+'Archaeoglobus sulfaticallidus PM70-1':4,
+'Archaeoglobus profundus':4,
+'Archaeoglobus veneficus':4,
+'Archaeoglobus fulgidus':4
+)Archaeoglobus:4
+)Archaeoglobaceae:4,
+(
+'Nanohaloarchaea archaeon SG9':4,
+(
+(
+Salinarchaeum:4,
+'Halostagnicola larsenii XH-48':4,
+(
+'Natrarchaeobaculum sulfurireducens':4,
+'Natrarchaeobaculum aegyptiacum':4
+)Natrarchaeobaculum:4,
+'Natronococcus occultus SP4':4,
+'Halopiger xanaduensis':4,
+'Halovivax ruber':4,
+'Halobiforma lacisalsi AJ5':4,
+'Natrinema pellirubrum':4,
+(
+'Haloterrigena daqingensis':4,
+'Haloterrigena turkmenica':4
+)Haloterrigena:4,
+'Natronobacterium gregoryi':4,
+'Natrialba magadii':4
+)Natrialbaceae:4,
+(
+'Halalkaliarchaeum desulfuricum':4,
+'halophilic archaeon DL31':4,
+(
+'Halohasta litchfieldiae':4,
+'Salinigranum rubrum':4,
+'Halorubrum lacusprofundi':4
+)Halorubraceae:4,
+(
+'Haloplanus rubicundus':4,
+'Haloquadratum walsbyi':4,
+'Halogeometricum borinquense':4,
+(
+'Haloferax gibbonsii':4,
+'Haloferax mediterranei':4,
+'Haloferax volcanii':4
+)Haloferax:4
+)Haloferacaceae:4
+)Haloferacales:4,
+(
+(
+'Halodesulfurarchaeum formicicum':4,
+'Halanaeroarchaeum sulfurireducens':4,
+'Halalkalicoccus jeotgali':4,
+(
+'Halobacterium hubeiense':4,
+'Halobacterium salinarum':4
+)Halobacterium:4
+)Halobacteriaceae:4,
+(
+Halorientalis:4,
+(
+'Halorhabdus tiamatea SARL4B':4,
+'Halorhabdus utahensis':4
+)Halorhabdus:4,
+'Halomicrobium mukohataei':4,
+(
+'Natronomonas moolapensis':4,
+'Natronomonas pharaonis':4
+)Natronomonas:4,
+(
+'Haloarcula taiwanensis':4,
+'Haloarcula hispanica':4,
+'Haloarcula marismortui':4
+)Haloarcula:4
+)Haloarculaceae:4
+)Halobacteriales:4
+)Halobacteria:4,
+(
+(
+'Methanocella arvoryzae':4,
+'Methanocella conradii':4,
+'Methanocella paludicola':4
+)Methanocella:4,
+(
+(
+'Methanosphaerula palustris':4,
+(
+'Methanoregula formicica':4,
+'Methanoregula boonei':4
+)Methanoregula:4
+)Methanoregulaceae:4,
+'Methanospirillum hungatei JF-1':4,
+'Methanocorpusculum labreanum':4,
+(
+'Methanolacinia petrolearia':4,
+(
+'Methanoculleus bourgensis':4,
+'Methanoculleus marisnigri':4
+)Methanoculleus:4
+)Methanomicrobiaceae:4
+)Methanomicrobiales:4,
+(
+(
+'Methanosaeta harundinacea':4,
+'Methanothrix thermoacetophila':4,
+'Methanothrix soehngenii':4
+)Methanothrix:4,
+(
+'Methanomethylovorans hollandica':4,
+'Methanosalsum zhilinae':4,
+(
+'Methanococcoides methylutens MM1':4,
+'Methanococcoides burtonii':4
+)Methanococcoides:4,
+'Methanohalobium evestigatum':4,
+(
+'Methanosarcina vacuolata Z-761':4,
+'Methanosarcina siciliae T4/M':4,
+'Methanosarcina lacustris Z-7289':4,
+'Methanosarcina horonobensis HB-1 = JCM 15518':4,
+'Methanosarcina acetivorans':4,
+'Methanosarcina thermophila':4,
+'Methanosarcina mazei':4,
+'Methanosarcina barkeri':4
+)Methanosarcina:4,
+(
+'Methanohalophilus halophilus':4,
+'Methanohalophilus mahii':4
+)Methanohalophilus:4
+)Methanosarcinaceae:4
+)Methanosarcinales:4
+)Methanomicrobia:4
+)'Stenosarchaea group':4,
+(
+(
+(
+(
+'Methanocaldococcus fervens':4,
+'Methanocaldococcus vulcanius':4,
+'Methanocaldococcus infernus':4,
+'Methanocaldococcus jannaschii':4
+)Methanocaldococcus:4,
+'Methanotorris igneus':4
+)Methanocaldococcaceae:4,
+(
+'Methanothermococcus okinawensis':4,
+(
+'Methanococcus aeolicus':4,
+'Methanococcus maripaludis':4,
+'Methanococcus voltae':4,
+'Methanococcus vannielii':4
+)Methanococcus:4
+)Methanococcaceae:4
+)Methanococcales:4,
+(
+'Methanothermus fervidus':4,
+(
+(
+'Methanothermobacter marburgensis':4,
+'Methanothermobacter thermautotrophicus':4
+)Methanothermobacter:4,
+'Methanosphaera stadtmanae':4,
+(
+'Methanobrevibacter olleyae':4,
+'Methanobrevibacter millerae':4,
+'Methanobrevibacter ruminantium':4,
+'Methanobrevibacter smithii':4
+)Methanobrevibacter:4,
+(
+'Methanobacterium lacus':4,
+'Methanobacterium congolense':4,
+'Methanobacterium subterraneum':4,
+'Methanobacterium formicicum':4
+)Methanobacterium:4
+)Methanobacteriaceae:4
+)Methanobacteriales:4
+)'Methanomada group':4
+)Euryarchaeota:4
+)Archaea:4;
