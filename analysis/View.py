@@ -30,19 +30,19 @@ else:
     cursor.execute(f"DROP VIEW IF EXISTS {args.name}")
     request = f"CREATE VIEW {args.name} AS "
     "SELECT f.id_uniprot, f.id_cog "
-    "FROM proteins_cog_{args.first} f "
-    "LEFT JOIN proteins_cog_{args.second} s ON f.id_uniprot = s.id_uniprot " 
+    f"FROM proteins_cog_{args.first} f "
+    f"LEFT JOIN proteins_cog_{args.second} s ON f.id_uniprot = s.id_uniprot " 
     if args.protein_nb is not None :
         request += f"WHERE f.id_cog IN ("
-        "SELECT id_cog FROM paralogy_{args.first} "
-        "WHERE proteins_count > {str(args.protein_nb)})" 
+        f"SELECT id_cog FROM paralogy_{args.first} "
+        f"WHERE proteins_count > {str(args.protein_nb)})" 
     request += f"UNION SELECT s.id_uniprot, s.id_cog "
-    "FROM proteins_cog_{args.first} f "
-    "RIGHT JOIN proteins_cog_{args.second} s ON f.id_uniprot = s.id_uniprot "
+    f"FROM proteins_cog_{args.first} f "
+    f"RIGHT JOIN proteins_cog_{args.second} s ON f.id_uniprot = s.id_uniprot "
     if args.protein_nb is not None :
         request += f"WHERE s.id_cog IN ("
-        "SELECT id_cog FROM paralogy_{args.second} "
-        "WHERE proteins_count > {str(args. protein_nb)})"
+        f"SELECT id_cog FROM paralogy_{args.second} "
+        f"WHERE proteins_count > {str(args. protein_nb)})"
     cursor.execute(request)
     
 
