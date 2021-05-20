@@ -64,7 +64,7 @@ else:
     
 
     # Infos
-    cursor.execute(f"SELECT id_uniprot, id_cog FROM {args.name}")
+    cursor.execute(f"SELECT id_uniprot, id_cog FROM proteins_cog_{args.name}")
     id_uniprot = []
     id_cog = []
     rows = 0
