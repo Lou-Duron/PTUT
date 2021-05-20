@@ -17,7 +17,7 @@ parser.add_argument('--database', '-b', type=str, help="database to connect to")
 parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
 parser.add_argument('--arcogs', '-a', type=str, required=False, help="tsv file with id_cogs descriptions and type from "
                                                                      "eggnog")
-parser.add_argument('--table', '-t',  type=str, required=True, help="the name you want to give to your table")
+parser.add_argument('--suffix', '-s',  type=str, required=True, help="the name you want to give to your table")
 parser.add_argument('--mapper', '-m', type=str, required=False, help="your arcog file from the eggnog mapper")
 parser.add_argument('--helicasefile', '-f', type=str, required=False,
                     help="tsv file with CGBD id associated to uniprot protein id ")
@@ -62,7 +62,6 @@ else:
             f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.table}`(`ncbi_id` VARCHAR(30), `id_uniprot` "
             f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
 
-
         
     if args.drop:
         cursor.execute(f"USE {args.database};")
@@ -81,6 +80,7 @@ else:
         with open(args.mapper, "r") as fh:
             tsv_emapper = csv.reader(fh, delimiter="\t")
             motif = re.compile(r"(arC.*@2157)")
+            obsolete = []
             for line in tsv_emapper:
                 if re.search("^[A-Z]", line[0]):  # and float(line[2]) < 0.05:  # Skip first lines and lines where
                     # e_value < 0.0
@@ -90,37 +90,41 @@ else:
                     go = line[9]
                     firstline = False
                     url = "https://www.uniprot.org/uniprot/" + id_uniprot + ".txt"
-                    Embl_file = uniprot_connection(url).text.split("\n")
                     SQ = False
                     seq = ''
                     name = ''
-                    for line_arc in Embl_file: #file
-                        if(firstline == False):
-                            if line_arc.startswith("OS"):
-                                firstline = True
-                                arcog = line_arc.split(" ")
-                                name = "'"
-                                for el in arcog:
-                                    if el.startswith("("):
-                                        break
-                                    if el.startswith("sp"):
-                                        break
-                                    if el != "OS" and el != "":
-                                        el = el.replace(".","")
-                                        if(len(name)>1):
-                                            name += " " + el
-                                        else:
-                                            name += el
-                                name.strip(" ")
-                                name += "'"
-                        if SQ == True:
-                            seq += line_arc.replace(' ', '').replace('\n', '').replace('//', '')
-                        if line_arc.startswith("SQ"):
-                            SQ = True
+                    Embl_file = uniprot_connection(url)
+                    if Embl_file == '':
+                        obsolete.append(id_uniprot)
+                    else:
+                        Embl_file = Embl_file.text.split("\n")         
+                        for line_arc in Embl_file: #file
+                            if(firstline == False):
+                                if line_arc.startswith("OS"):
+                                    firstline = True
+                                    arcog = line_arc.split(" ")
+                                    name = "'"
+                                    for el in arcog:
+                                        if el.startswith("("):
+                                            break
+                                        if el.startswith("sp"):
+                                            break
+                                        if el != "OS" and el != "":
+                                            el = el.replace(".","")
+                                            if(len(name)>1):
+                                                name += " " + el
+                                            else:
+                                                name += el
+                                    name.strip(" ")
+                                    name += "'"
+                            if SQ == True:
+                                seq += line_arc.replace(' ', '').replace('\n', '').replace('//', '')
+                            if line_arc.startswith("SQ"):
+                                SQ = True
 
-                    cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
-                                    f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
-                                     (name, id_uniprot, seq))
+                        cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
+                                        f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
+                                        (name, id_uniprot, seq))
 
 
                     for el in line[4].split(","):
@@ -154,7 +158,12 @@ else:
                                            (id_uniprot, id_cog_mapper, e_value, taxon_id, taxon_name,
                                             max_annotation_level, category, go, kegg_ko, kegg_pathway, kegg_module,
                                             kegg_reaction, kegg_rclass))
-
+        
+        obsolete_path = rootpath / f"analysis/results/{args.name}.txt"
+        obsolete_file = open(obsolete_path, "w")
+        for proteins in obsolete:
+            obsolete_file.write(proteins + "\n")
+        obsolete_file.close()
 
     if args.helicasefile is not None:
         cursor.execute(
@@ -167,7 +176,6 @@ else:
             obsolete = []
             for line in tsv_helicases:  # File with uniprot id and CBI id
                 id_uniprot = line[1]
-                print(id_uniprot)
                 # Arcogs retrieval
                 arcogs = []
                 SQ = False
