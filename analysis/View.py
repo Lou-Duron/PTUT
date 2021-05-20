@@ -27,7 +27,7 @@ except mc.Error as err:
 else:  
     cursor = conn.cursor()
     cursor.execute(f"USE {args.database}")
-    cursor.execute(f"DROP VIEW IF EXISTS VIEW proteins_cog_{args.name}")
+    cursor.execute(f"DROP VIEW IF EXISTS proteins_cog_{args.name}")
     request = (f"CREATE VIEW proteins_cog_{args.name} AS "
         "SELECT f.id_uniprot, f.id_cog "
         f"FROM proteins_cog_{args.first_suffix} f "
