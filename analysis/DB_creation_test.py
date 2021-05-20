@@ -11,14 +11,15 @@ rootpath = Path(__file__).resolve().parent.parent #Get root path of project
 
 ################################################################################################
 parser = argparse.ArgumentParser(description='Database Creation')
+parser.add_argument('--host', '-o', type=str, help="host connection")
+parser.add_argument('--database', '-b', type=str, help="database to connect to")
 parser.add_argument('--helicasefile', '-f', type=str,
                     help="tsv file with CGBD id associated to uniprot protein id ")
-parser.add_argument('--host', '-o', type = str, help = "host connection")
-parser.add_argument('--obsolete', '-s', type = str, help = "file of obsolete proteins")
-parser.add_argument('--database', '-b', type = str, help = "database to connect to")
-parser.add_argument('--table', '-t',  type=str, help="the name you want to give to your table")
+parser.add_argument('--arcogs', '-a', type=str, required=True, help = "tsv file with id_cogs descriptions and type")
+parser.add_argument('--table', '-t',  type=str, required=True, help="the table you want to test")
 parser.add_argument('--multiple', '-m', type=str, required=False, default='multiple_status', help='filename for multiple status proteins')
-parser.add_argument('--arcogs', '-a', type = str, required = False, help = "tsv file with id_cogs descriptions and type")
+parser.add_argument('--name', '-n', type=str, required=False, default='obsolete',
+                    help='filename of obsolete uniprot id (default obsolete.txt)')
 args = parser.parse_args()
 ###############################################################################################
 
@@ -43,7 +44,6 @@ else:  # si le connexion réussie
 
     cursor = conn.cursor()  # Création du curseur
 
-    print( "======================================================================================================================")
     # Test proteins number in the helicase file
     with open(args.helicasefile, "r") as fh:
         proteins_file_count = 0
@@ -52,7 +52,7 @@ else:  # si le connexion réussie
         print("Number of proteins in the helicase file : ", proteins_file_count)
     
 
-    with open(args.obsolete, "r") as fh:
+    with open(args.name, "r") as fh:
         obsolete_proteins_count = 0
         for protein in fh:
             obsolete_proteins_count += 1
@@ -91,19 +91,20 @@ else:  # si le connexion réussie
     # Retrieve proteins with multiple status
     cursor.execute(f"SELECT id_uniprot FROM multiple_status_{args.table} WHERE multiple > 1;")
     results = cursor.fetchall()
-    
-    multiplepath = rootpath / f"analysis/results/{args.multiple}.txt"
-    multiple = open(multiplepath, "w")
-    for proteins in results:
-        multiple.write(proteins[0] + "\n")
-    multiple.close()
-    print(f"proteins with multiple status have been written in the following file results/{args.multiple}.txt")
+
+    if args.multiple:
+        multiplepath = rootpath / f"analysis/results/{args.multiple}.txt"
+        multiple = open(multiplepath, "w")
+        for proteins in results:
+            multiple.write(proteins[0] + "\n")
+        multiple.close()
+        print(f"proteins with multiple status have been written in the following file results/{args.multiple}.txt")
 
     print("\nCogs")
 
     # Test number of cogs associated with our proteins that are type S
-    cursor.execute("SELECT count(category) FROM cog WHERE category = 'S' AND id_cog IN (SELECT id_cog FROM proteins_cog"
-                   " WHERE id_cog != 'NA');")
+    cursor.execute(f"SELECT count(category) FROM cog WHERE category = 'S' AND id_cog IN (SELECT id_cog FROM proteins_cog_{args.table}"
+                   f" WHERE id_cog != 'NA');")
     result_type_S = cursor.fetchall()
     print("Number of proteins which are associated with a type S arcog : ", result_type_S[0][0])
 
@@ -116,26 +117,22 @@ else:  # si le connexion réussie
 
     # Test number of arcogs in the annotation file
     if args.arcogs:
-		with open(args.arcogs, "r") as fh:
-			arcogs_file_count = 0
-			for line in fh:
-				arcogs_file_count += 1
-			print("Number of arcogs in the annotation file : ", arcogs_file_count)
+        with open(args.arcogs, "r") as fh:
+            arcogs_file_count = 0
+            for line in fh:
+                arcogs_file_count += 1
+            print("Number of arcogs in the annotation file : ", arcogs_file_count)
 
-		# Test number of arcogs in the database
-		cursor.execute("SELECT id_cog FROM cog")
-		arcogs_table = cursor.fetchall()
-		print("Number of arcogs in the table cog : ", len(arcogs_table))
+        # Test number of arcogs in the database
+        cursor.execute(f"SELECT id_cog FROM cog")
+        arcogs_table = cursor.fetchall()
+        print("Number of arcogs in the table cog : ", len(arcogs_table))
 
-		# Test if there's the same amount of arcogs in the database and in the annotation file
-		print("Number of arcogs in database equals to arcogs in file", arcogs_file_count == len(arcogs_table))
-    
-    print( "======================================================================================================================")
+        # Test if there's the same amount of arcogs in the database and in the annotation file
+        print("Number of arcogs in database equals to arcogs in file", arcogs_file_count == len(arcogs_table))
 
     cursor.close()
     conn.commit()
-    if(conn.is_connected()):
+    if conn.is_connected():
         cursor.close()  # close cursor
         conn.close()  # close connection
-
-
