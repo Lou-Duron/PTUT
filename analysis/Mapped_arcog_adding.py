@@ -89,9 +89,11 @@ else:
                     category = line[6]
                     go = line[9]
                     firstline = False
-                    SQ = False
                     url = "https://www.uniprot.org/uniprot/" + id_uniprot + ".txt"
                     Embl_file = uniprot_connection(url).text.split("\n")
+                    SQ = False
+                    seq = ''
+                    name = ''
                     for line_arc in Embl_file: #file
                         if(firstline == False):
                             if line_arc.startswith("OS"):
@@ -115,10 +117,10 @@ else:
                             seq += line_arc.replace(' ', '').replace('\n', '').replace('//', '')
                         if line_arc.startswith("SQ"):
                             SQ = True
-                    
+
                     cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
                                     f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
-                                    (name, id_uniprot, seq))
+                                     (name, id_uniprot, seq))
 
 
                     for el in line[4].split(","):
@@ -155,7 +157,6 @@ else:
 
 
     if args.helicasefile is not None:
-
         cursor.execute(
             f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),"
             f"PRIMARY KEY(`id_uniprot`, `id_cog`));")
@@ -166,8 +167,11 @@ else:
             obsolete = []
             for line in tsv_helicases:  # File with uniprot id and CBI id
                 id_uniprot = line[1]
+                print(id_uniprot)
                 # Arcogs retrieval
                 arcogs = []
+                seq = ''
+                name = ''
                 url_arcog = "https://www.uniprot.org/uniprot/" + id_uniprot + ".txt"
                 Embl_file = uniprot_connection(url_arcog)
                 if Embl_file == '':
@@ -178,45 +182,44 @@ else:
                         if line_arc.startswith("DR   eggNOG"):
                             arcog = line_arc.split("; ")
                             arcogs.append(arcog[1])
-                    if arcogs:
-                        for el in arcogs:
-                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} (id_uniprot, id_cog) "
-                                           f"VALUES (%s,%s)", (id_uniprot, el))
-                        conn.commit()
-                    else:
-                        cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
-                                       f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
-                        conn.commit()
+                        if arcogs:
+                            for el in arcogs:
+                                cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} (id_uniprot, id_cog) "
+                                            f"VALUES (%s,%s)", (id_uniprot, el))
+                            conn.commit()
+                        else:
+                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
+                                        f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
+                            conn.commit()
 
-                        # Instertion for proteins with no cog
-                        # Since NULL is not authorized as primary key, string 'NA' is used
-                    firstline = False
-                    if(firstline == False):
-                        if line_arc.startswith("OS"):
-                            firstline = True
-                            arcog = line_arc.split(" ")
-                            name = "'"
-                            for el in arcog:
-                                if el.startswith("("):
-                                    break
-                                if el.startswith("sp"):
-                                    break
-                                if el != "OS" and el != "":
-                                    el = el.replace(".","")
-                                    if(len(name)>1):
-                                        name += " " + el
-                                    else:
-                                        name += el
-                            name.strip(" ")
-                            name += "'"    
-                    SQ = False
-                    seq = ''
-                    if SQ == True:
-                        seq += line_arc.replace(' ', '').replace('\n', '').replace('//', '')
-                    if line_arc.startswith("SQ"):
-                        SQ = True
+                            # Instertion for proteins with no cog
+                            # Since NULL is not authorized as primary key, string 'NA' is used
+                        firstline = False
+                        if(firstline == False):
+                            if line_arc.startswith("OS"):
+                                firstline = True
+                                arcog = line_arc.split(" ")
+                                name = "'"
+                                for el in arcog:
+                                    if el.startswith("("):
+                                        break
+                                    if el.startswith("sp"):
+                                        break
+                                    if el != "OS" and el != "":
+                                        el = el.replace(".","")
+                                        if(len(name)>1):
+                                            name += " " + el
+                                        else:
+                                            name += el
+                                name.strip(" ")
+                                name += "'"    
+                        SQ = False
+                        if SQ == True:
+                            seq += line_arc.replace(' ', '').replace('\n', '').replace('//', '')
+                        if line_arc.startswith("SQ"):
+                            SQ = True
                 
-                cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
+                    cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
                                 f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
                                 (name, id_uniprot, seq))        
 
@@ -252,7 +255,7 @@ else:
         f"FROM proteins_cog_{args.table} GROUP BY id_uniprot;")  # Proteins with multiple cogs associated
     conn.commit()
 
-    cursor.execute(f"CREATE VIEW paralogy_{args.table} AS SELECT id_cog, count(strain) AS strain_count, "
+    cursor.execute(f"CREATE VIEW paralogy_{args.table} AS SELECT id_cog, COUNT(DISTINCT(ncbi_id)) AS strain_count, "
                    f"count(id_uniprot) as proteins_count FROM proteins_cog_{args.table} NATURAL JOIN "
                    f"strain_proteins_{args.table} GROUP BY id_cog;")
     conn.commit()
