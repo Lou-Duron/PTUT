@@ -30,34 +30,34 @@ else:
     cursor.execute(f"DROP VIEW IF EXISTS {args.name}")
     request = (f"CREATE VIEW {args.name} AS "
         "SELECT f.id_uniprot, f.id_cog "
-        f"FROM proteins_cog_{args.first} f "
-        f"LEFT JOIN proteins_cog_{args.second} s ON f.id_uniprot = s.id_uniprot "
+        f"FROM proteins_cog_{args.first_suffix} f "
+        f"LEFT JOIN proteins_cog_{args.second_suffix} s ON f.id_uniprot = s.id_uniprot "
         "WHERE f.id_uniprot NOT IN "
         "(SELECT id_uniprot "
-        f"FROM proteins_cog_{args.first} "
+        f"FROM proteins_cog_{args.first_suffix} "
         "WHERE id_cog = 'NA' "
         "AND id_uniprot IN( "
         "SELECT id_uniprot "
-        f"FROM proteins_cog_{args.second} "
+        f"FROM proteins_cog_{args.second_suffix} "
         "WHERE id_cog != 'NA')) ") 
     if args.protein_nb is not None :
         request += (f"AND f.id_cog IN ("
-            f"SELECT id_cog FROM paralogy_{args.first} "
+            f"SELECT id_cog FROM paralogy_{args.first_suffix} "
             f"WHERE proteins_count > {str(args.protein_nb)})") 
     request += (f"UNION SELECT s.id_uniprot, s.id_cog "
-        f"FROM proteins_cog_{args.first} f "
-        f"RIGHT JOIN proteins_cog_{args.second} s ON f.id_uniprot = s.id_uniprot "
+        f"FROM proteins_cog_{args.first_suffix} f "
+        f"RIGHT JOIN proteins_cog_{args.second_suffix} s ON f.id_uniprot = s.id_uniprot "
         "WHERE s.id_uniprot NOT IN "
         "(SELECT id_uniprot "
-        f"FROM proteins_cog_{args.second} "
+        f"FROM proteins_cog_{args.second_suffix} "
         "WHERE id_cog = 'NA' "
         "AND id_uniprot IN( "
         "SELECT id_uniprot "
-        f"FROM proteins_cog_{args.first} "
+        f"FROM proteins_cog_{args.first_suffix} "
         "WHERE id_cog != 'NA')) ") 
     if args.protein_nb is not None :
         request += (f"AND s.id_cog IN ("
-            f"SELECT id_cog FROM paralogy_{args.second} "
+            f"SELECT id_cog FROM paralogy_{args.second_suffix} "
             f"WHERE proteins_count > {str(args. protein_nb)})")
     cursor.execute(request)
     
