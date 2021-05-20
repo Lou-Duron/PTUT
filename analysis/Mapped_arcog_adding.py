@@ -59,7 +59,7 @@ else:
     cursor.execute(f"USE {args.database};")
     
     cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.suffix}`(`ncbi_id` VARCHAR(30), `id_uniprot` "
+            f"CREATE TABLE IF NOT EXISTS `strain_proteins` (`ncbi_id` VARCHAR(30), `id_uniprot` "
             f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
 
         
@@ -131,7 +131,7 @@ else:
                             if line_arc.startswith("SQ"):
                                 SQ = True
 
-                        cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.suffix} "
+                        cursor.execute(f"INSERT IGNORE INTO strain_proteins "
                                         f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
                                         (name, id_uniprot, seq))
 
@@ -246,7 +246,7 @@ else:
                         # Instertion for proteins with no cog
                         # Since NULL is not authorized as primary key, string 'NA' is used
                     
-                    cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.suffix} "
+                    cursor.execute(f"INSERT IGNORE INTO strain_proteins "
                                 f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
                                 (name, id_uniprot, seq))        
 
@@ -284,7 +284,7 @@ else:
 
     cursor.execute(f"CREATE VIEW paralogy_{args.suffix} AS SELECT id_cog, COUNT(DISTINCT(ncbi_id)) AS strain_count, "
                    f"count(id_uniprot) as proteins_count FROM proteins_cog_{args.suffix} NATURAL JOIN "
-                   f"strain_proteins_{args.suffix} GROUP BY id_cog;")
+                   f"strain_proteins GROUP BY id_cog;")
     conn.commit()
 
     # strain and protein cog by cog
