@@ -80,7 +80,8 @@ else:
         with open(args.mapper, "r") as fh:
             file = csv.reader(fh, delimiter="\t")
             for line in file: 
-                nb_line += 1
+                if re.search("^[A-Z]", line[0]):
+                    nb_line += 1
 
         with open(args.mapper, "r") as fh:
             tsv_emapper = csv.reader(fh, delimiter="\t")
