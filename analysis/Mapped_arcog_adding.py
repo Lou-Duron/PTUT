@@ -76,14 +76,22 @@ else:
                        f"`kegg_pathway` VARCHAR(30), `kegg_module` VARCHAR(30), `kegg_reaction` VARCHAR(30), "
                        f"`kegg_rclass` VARCHAR(30), PRIMARY KEY(`id_uniprot`, `id_cog`, `taxon_id`));")
         
-        
+        nb_line = 0
+        with open(args.mapper, "r") as fh:
+            file = csv.reader(fh, delimiter="\t")
+            for line in file: 
+                nb_line += 1
+
         with open(args.mapper, "r") as fh:
             tsv_emapper = csv.reader(fh, delimiter="\t")
             motif = re.compile(r"(arC.*@2157)")
             obsolete = []
+            cpt = 0
             for line in tsv_emapper:
                 if re.search("^[A-Z]", line[0]):  # and float(line[2]) < 0.05:  # Skip first lines and lines where
                     # e_value < 0.0
+                    cpt += 1
+                    print(f"In progress : {cpt}/{nb_line} proteins", end = "\r") 
                     id_uniprot = line[0]
                     e_value = line[2]
                     category = line[6]
@@ -170,11 +178,19 @@ else:
             f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.suffix}`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),"
             f"PRIMARY KEY(`id_uniprot`, `id_cog`));")
     
+        nb_line = 0
+        with open(args.helicasefile, "r") as fh:
+            tsv_helicases = csv.reader(fh, delimiter="\t")
+            for line in tsv_helicases: 
+                nb_line += 1
 
         with open(args.helicasefile, "r") as fh:  # reading tsv entry file using args module
+            cpt = 0
             tsv_helicases = csv.reader(fh, delimiter="\t")
             obsolete = []
             for line in tsv_helicases:  # File with uniprot id and CBI id
+                cpt += 1
+                print(f"In progress : {cpt}/{nb_line} proteins", end = "\r")
                 id_uniprot = line[1]
                 # Arcogs retrieval
                 arcogs = []
