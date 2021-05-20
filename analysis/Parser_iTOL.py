@@ -11,7 +11,7 @@ from pathlib import Path
 parser = argparse.ArgumentParser(description='Parser_iTOL') 
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
-parser.add_argument('--suffix', '-s', type = str, help = "table to use")
+parser.add_argument('--suffix', '-s', type = str, help = "of the table to use")
 args = parser.parse_args()
 ###############################################################################################
 try:
@@ -30,8 +30,8 @@ else:
     values = []
     colors = []
     cursor.execute(f"USE {args.database}")
-    cursor.execute(f"SELECT id_cog, ncbi_id FROM proteins_cog_{args.table} p, "
-                   f"strain_proteins_{args.table} s WHERE p.id_uniprot = s.id_uniprot")
+    cursor.execute(f"SELECT id_cog, ncbi_id FROM proteins_cog_{args.suffix} p, "
+                   f"strain_proteins_{args.suffix} s WHERE p.id_uniprot = s.id_uniprot")
     for el in cursor:
         if el[0]!="NA":
             if el[1] not in dico.keys():
@@ -89,6 +89,7 @@ else:
                     else:
                         anot.write("\t"+"0")
                 anot.write("\n")
+    print("Done : ")
     print(f"NCBI_tree_{args.suffix}.txt created")
     print(f"iTOL_annotation_{args.suffix}.txt created")
 
