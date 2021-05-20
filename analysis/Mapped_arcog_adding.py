@@ -168,6 +168,8 @@ else:
                                             max_annotation_level, category, go, kegg_ko, kegg_pathway, kegg_module,
                                             kegg_reaction, kegg_rclass))
         
+        print("\nData recovery finished !")
+        print("Please wait while the tables are created")
         obsolete_path = rootpath / f"analysis/results/{args.name}.txt"
         obsolete_file = open(obsolete_path, "w")
         for proteins in obsolete:
@@ -250,7 +252,8 @@ else:
                                 f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
                                 (name, id_uniprot, seq))        
 
-
+        print("\nData recovery finished !")
+        print("Please wait while the tables are created")
         obsolete_path = rootpath / f"analysis/results/{args.name}.txt"
         obsolete_file = open(obsolete_path, "w")
         for proteins in obsolete:

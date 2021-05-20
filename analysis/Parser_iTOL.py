@@ -31,7 +31,7 @@ else:
     colors = []
     cursor.execute(f"USE {args.database}")
     cursor.execute(f"SELECT id_cog, ncbi_id FROM proteins_cog_{args.suffix} p, "
-                   f"strain_proteins_{args.suffix} s WHERE p.id_uniprot = s.id_uniprot")
+                   f"strain_proteins s WHERE p.id_uniprot = s.id_uniprot")
     for el in cursor:
         if el[0]!="NA":
             if el[1] not in dico.keys():
