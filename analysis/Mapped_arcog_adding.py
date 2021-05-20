@@ -10,6 +10,7 @@ from pathlib import Path
 import requests
 import time
 
+
 ################################################################################################
 parser = argparse.ArgumentParser(description='Add mapped arcogs to database and remove previous results')
 parser.add_argument('--database', '-b', type=str, help="database to connect to")
@@ -28,6 +29,21 @@ args = parser.parse_args()
 
 rootpath = Path(__file__).resolve().parent.parent
 
+def uniprot_connection(url):
+    info = None
+    while info is None: # retry if exception occurs 
+        try: 
+            info = requests.get(url)
+            info.raise_for_status()  # If the response was successful, no Exception will be raised
+            
+        except Exception as err:
+            print(f'An error occurred: {err}')  # Python 3.6
+            print("retrying")
+            time.sleep(1)
+            info = None
+
+    return info
+    
 try:
     # try connection the database
     conn = mc.connect(host=args.host,
@@ -39,10 +55,15 @@ except mc.Error as err:
 
 else:
     cursor = conn.cursor()
-
     cursor.execute(f"CREATE DATABASE IF NOT EXISTS {args.database};")
     cursor.execute(f"USE {args.database};")
+    
+    cursor.execute(
+            f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.table}`(`ncbi_id` VARCHAR(30), `id_uniprot` "
+            f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
 
+
+        
     if args.drop:
         cursor.execute(f"USE {args.database};")
         cursor.execute(f"DROP TABLE IF EXISTS `proteins_cog_{args.table}`;")
@@ -55,21 +76,50 @@ else:
                        f"`max_annotation_level` VARCHAR(100), `category` VARCHAR(5), `go` TEXT, `kegg_ko` VARCHAR(30),"
                        f"`kegg_pathway` VARCHAR(30), `kegg_module` VARCHAR(30), `kegg_reaction` VARCHAR(30), "
                        f"`kegg_rclass` VARCHAR(30), PRIMARY KEY(`id_uniprot`, `id_cog`, `taxon_id`));")
-        cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.table}`(`strain` VARCHAR(30), `id_uniprot` "
-            f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
-
-
+        
+        
         with open(args.mapper, "r") as fh:
             tsv_emapper = csv.reader(fh, delimiter="\t")
             motif = re.compile(r"(arC.*@2157)")
             for line in tsv_emapper:
                 if re.search("^[A-Z]", line[0]):  # and float(line[2]) < 0.05:  # Skip first lines and lines where
-                    # e_value < 0.05
+                    # e_value < 0.0
                     id_uniprot = line[0]
                     e_value = line[2]
                     category = line[6]
                     go = line[9]
+                    firstline = False
+                    SQ = False
+                    url = "https://www.uniprot.org/uniprot/" + id_uniprot + ".txt"
+                    Embl_file = uniprot_connection(url).text.split("\n")
+                    for line_arc in Embl_file: #file
+                        if(firstline == False):
+                            if line_arc.startswith("OS"):
+                                firstline = True
+                                arcog = line_arc.split(" ")
+                                name = "'"
+                                for el in arcog:
+                                    if el.startswith("("):
+                                        break
+                                    if el.startswith("sp"):
+                                        break
+                                    if el != "OS" and el != "":
+                                        el = el.replace(".","")
+                                        if(len(name)>1):
+                                            name += " " + el
+                                        else:
+                                            name += el
+                                name.strip(" ")
+                                name += "'"
+                        if SQ == True:
+                            seq += line_arc.replace(' ', '').replace('\n', '').replace('//', '')
+                        if line_arc.startswith("SQ"):
+                            SQ = True
+                    
+                    cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
+                                    f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
+                                    (name, id_uniprot, seq))
+
 
                     for el in line[4].split(","):
                         id_cog_mapper = re.search(".*@", el).group(0)[:-1]
@@ -109,9 +159,7 @@ else:
         cursor.execute(
             f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),"
             f"PRIMARY KEY(`id_uniprot`, `id_cog`));")
-        cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.table}`(`strain` VARCHAR(30), `id_uniprot` "
-            f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
+    
 
         with open(args.helicasefile, "r") as fh:  # reading tsv entry file using args module
             tsv_helicases = csv.reader(fh, delimiter="\t")
@@ -121,23 +169,11 @@ else:
                 # Arcogs retrieval
                 arcogs = []
                 url_arcog = "https://www.uniprot.org/uniprot/" + id_uniprot + ".txt"
-                arcog_response = None
-                while arcog_response is None:  # retry if exception occurs
-                    try:
-                        arcog_response = requests.get(url_arcog)
-                        arcog_response.raise_for_status()  # If the response was successful, no Exception will be raised
-
-                    except Exception as err:
-                        print(f'An error occurred: {err}')  # Python 3.6
-                        print("retrying")
-                        time.sleep(1)
-                        arcog_response = None
-
-                Embl_file = arcog_response.text.split("\n")
-                if arcog_response.text == "":  # Unfortunately if obsolete do not return error but empty file
+                Embl_file = uniprot_connection(url_arcog)
+                if Embl_file == '':
                     obsolete.append(id_uniprot)
-
                 else:
+                    Embl_file = Embl_file.text.split("\n")         
                     for line_arc in Embl_file:  # file
                         if line_arc.startswith("DR   eggNOG"):
                             arcog = line_arc.split("; ")
@@ -154,39 +190,36 @@ else:
 
                         # Instertion for proteins with no cog
                         # Since NULL is not authorized as primary key, string 'NA' is used
+                    firstline = False
+                    if(firstline == False):
+                        if line_arc.startswith("OS"):
+                            firstline = True
+                            arcog = line_arc.split(" ")
+                            name = "'"
+                            for el in arcog:
+                                if el.startswith("("):
+                                    break
+                                if el.startswith("sp"):
+                                    break
+                                if el != "OS" and el != "":
+                                    el = el.replace(".","")
+                                    if(len(name)>1):
+                                        name += " " + el
+                                    else:
+                                        name += el
+                            name.strip(" ")
+                            name += "'"    
+                    SQ = False
+                    seq = ''
+                    if SQ == True:
+                        seq += line_arc.replace(' ', '').replace('\n', '').replace('//', '')
+                    if line_arc.startswith("SQ"):
+                        SQ = True
+                
+                cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
+                                f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
+                                (name, id_uniprot, seq))        
 
-                    # sequence retrieval
-                    # Strain retrieval
-                    strain = line[0].split(".")
-                    strain = strain[0][0:5]
-                    url_seq = "https://www.uniprot.org/uniprot/" + id_uniprot + ".fasta"
-                    seq_response = None
-
-                    while seq_response is None:  # retry if exception occurs
-                        try:
-                            seq_response = requests.get(url_seq)
-                            seq_response.raise_for_status()  # If the response was successful,
-                            # no Exception will be raised
-
-                        except Exception as err:
-                            print(f'An error occurred: {err}')
-                            print("retrying")
-                            # Python 3.6
-                            time.sleep(1)
-                            seq_response = None
-
-                    fasta = seq_response.text
-                    if fasta != '':
-                        fasta = fasta.split("\n", 1)
-                        seq = fasta[1].replace("\n", '')
-                        cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
-                                       f"(strain, id_uniprot, sequence) VALUES (%s,%s,%s)",
-                                       (strain, id_uniprot, seq))
-                        conn.commit()
-                    else:
-                        cursor.execute(f"INSERT INGORE INTO strain_proteins_{args.table} (strain, id_uniprot, sequence)"
-                                       f" VALUES (%s,%s,%s)", (strain, id_uniprot, None))
-                        conn.commit()
 
         obsolete_path = rootpath / f"analysis/results/{args.name}.txt"
         obsolete_file = open(obsolete_path, "w")
