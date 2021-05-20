@@ -31,7 +31,6 @@ rootpath = Path(__file__).resolve().parent.parent
 try:
     # try connection the database
     conn = mc.connect(host=args.host,
-                      database=args.database,
                       user=config.BD_USER,  # BD_USER by default in directroy configurations
                       password=config.BD_PASSWORD)  # BD_PASSEWORD by default in directory configurations
 
@@ -41,13 +40,14 @@ except mc.Error as err:
 else:
     cursor = conn.cursor()
 
-    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {args.database}")
-    cursor.execute(f"USE {args.database}")
+    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {args.database};")
+    cursor.execute(f"USE {args.database};")
 
     if args.drop:
-        cursor.execute(f"DROP TABLE IF EXISTS `proteins_cog_{args.table}`")
-        cursor.execute(f"DROP VIEW IF EXISTS `paralogy_{args.table}`")
-        cursor.execute(f"DROP VIEW IF EXISTS `multiple_status_{args.table}`")
+        cursor.execute(f"USE {args.database};")
+        cursor.execute(f"DROP TABLE IF EXISTS `proteins_cog_{args.table}`;")
+        cursor.execute(f"DROP VIEW IF EXISTS `paralogy_{args.table}`;")
+        cursor.execute(f"DROP VIEW IF EXISTS `multiple_status_{args.table}`;")
 
     if args.mapper is not None:
         cursor.execute(f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30), `id_cog` "
@@ -196,18 +196,22 @@ else:
 
         conn.commit()
 
-    with open(args.arcogs, "r") as fa:  # Reading of cog description
-        tsv_arcogs = csv.reader(fa, delimiter="\t")
-        for line in tsv_arcogs:
-            if line[3] == "":
-                cursor.execute("INSERT IGNORE INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
-                               (line[1], line[2], None))
-                conn.commit()
+    if args.arcogs is not None:
+        cursor.execute(f"DROP TABLE IF EXISTS `cog`;")
+        cursor.execute("CREATE TABLE IF NOT EXISTS `cog`(`id_cog` VARCHAR(30) UNIQUE, `category` VARCHAR(100), "
+                       "`description` TEXT, PRIMARY KEY(`id_cog`));")
+        with open(args.arcogs, "r") as fa:  # Reading of cog description
+            tsv_arcogs = csv.reader(fa, delimiter="\t")
+            for line in tsv_arcogs:
+                if line[3] == "":
+                    cursor.execute("INSERT IGNORE INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
+                                   (line[1], line[2], None))
+                    conn.commit()
 
-            else:
-                cursor.execute("INSERT IGNORE INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
-                               (line[1], line[2], line[3]))
-                conn.commit()
+                else:
+                    cursor.execute("INSERT IGNORE INTO cog (id_cog, category, description) VALUES (%s,%s ,%s)",
+                                   (line[1], line[2], line[3]))
+                    conn.commit()
 
     # Views
     cursor.execute(
@@ -217,7 +221,7 @@ else:
 
     cursor.execute(f"CREATE VIEW paralogy_{args.table} AS SELECT id_cog, count(strain) AS strain_count, "
                    f"count(id_uniprot) as proteins_count FROM proteins_cog_{args.table} NATURAL JOIN "
-                   f"strain_proteins GROUP BY id_cog;")
+                   f"strain_proteins_{args.table} GROUP BY id_cog;")
     conn.commit()
 
     # strain and protein cog by cog
