@@ -10,8 +10,8 @@ parser = argparse.ArgumentParser(description='View')
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
 parser.add_argument('--name', '-n', type = str, help = "name of the view")
-parser.add_argument('--first', '-f', type = str, help = "name of the first table")
-parser.add_argument('--second', '-s', type = str, help = "name of the second table")
+parser.add_argument('--first_suffix', '-f', type = str, help = "name of the first suffix table")
+parser.add_argument('--second_suffix', '-s', type = str, help = "name of the second suffix table")
 parser.add_argument('--protein_nb', '-p', type=int, required=False, help="minimal number of protein for a given arcog")
 args = parser.parse_args()
 ###############################################################################################
@@ -76,3 +76,6 @@ else:
             if el[1] != 'NA':
                 id_cog.append(el[1])
     print(f"Done :\n{rows} rows in set\n{len(id_uniprot)} proteins\n{len(id_cog)} distinct arcogs")
+
+
+
