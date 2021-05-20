@@ -59,18 +59,18 @@ else:
     cursor.execute(f"USE {args.database};")
     
     cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.table}`(`ncbi_id` VARCHAR(30), `id_uniprot` "
+            f"CREATE TABLE IF NOT EXISTS `strain_proteins_{args.suffix}`(`ncbi_id` VARCHAR(30), `id_uniprot` "
             f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
 
         
     if args.drop:
         cursor.execute(f"USE {args.database};")
-        cursor.execute(f"DROP TABLE IF EXISTS `proteins_cog_{args.table}`;")
-        cursor.execute(f"DROP VIEW IF EXISTS `paralogy_{args.table}`;")
-        cursor.execute(f"DROP VIEW IF EXISTS `multiple_status_{args.table}`;")
+        cursor.execute(f"DROP TABLE IF EXISTS `proteins_cog_{args.suffix}`;")
+        cursor.execute(f"DROP VIEW IF EXISTS `paralogy_{args.suffix}`;")
+        cursor.execute(f"DROP VIEW IF EXISTS `multiple_status_{args.suffix}`;")
 
     if args.mapper is not None:
-        cursor.execute(f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30), `id_cog` "
+        cursor.execute(f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.suffix}`(`id_uniprot` VARCHAR(30), `id_cog` "
                        f"VARCHAR(30), `e_value` FLOAT, `taxon_id` VARCHAR(30), `taxon_name` VARCHAR(100), "
                        f"`max_annotation_level` VARCHAR(100), `category` VARCHAR(5), `go` TEXT, `kegg_ko` VARCHAR(30),"
                        f"`kegg_pathway` VARCHAR(30), `kegg_module` VARCHAR(30), `kegg_reaction` VARCHAR(30), "
@@ -122,7 +122,7 @@ else:
                             if line_arc.startswith("SQ"):
                                 SQ = True
 
-                        cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
+                        cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.suffix} "
                                         f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
                                         (name, id_uniprot, seq))
 
@@ -143,7 +143,7 @@ else:
                         else:
                             max_annotation_level = "false"
                         if go == "-":
-                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} (id_uniprot, id_cog, e_value,"
+                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.suffix} (id_uniprot, id_cog, e_value,"
                                            f" taxon_id, taxon_name, max_annotation_level, category, go, kegg_ko, "
                                            f"kegg_pathway, kegg_module, kegg_reaction, kegg_rclass) "
                                            f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
@@ -151,7 +151,7 @@ else:
                                             max_annotation_level, category, 'NA', kegg_ko, kegg_pathway, kegg_module,
                                             kegg_reaction, kegg_rclass))
                         else:
-                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} (id_uniprot, id_cog, e_value,"
+                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.suffix} (id_uniprot, id_cog, e_value,"
                                            f" taxon_id, taxon_name, max_annotation_level, category, go, kegg_ko, "
                                            f"kegg_pathway, kegg_module, kegg_reaction, kegg_rclass) "
                                            f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
@@ -167,7 +167,7 @@ else:
 
     if args.helicasefile is not None:
         cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.table}`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),"
+            f"CREATE TABLE IF NOT EXISTS `proteins_cog_{args.suffix}`(`id_uniprot` VARCHAR(30),`id_cog` VARCHAR(100),"
             f"PRIMARY KEY(`id_uniprot`, `id_cog`));")
     
 
@@ -218,18 +218,18 @@ else:
                             arcogs.append(arcog[1])
                     if arcogs:
                         for el in arcogs:
-                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} (id_uniprot, id_cog) "
+                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.suffix} (id_uniprot, id_cog) "
                                         f"VALUES (%s,%s)", (id_uniprot, el))
                         conn.commit()
                     else:
-                        cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
+                        cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.suffix} "
                                     f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
                         conn.commit()
 
                         # Instertion for proteins with no cog
                         # Since NULL is not authorized as primary key, string 'NA' is used
                     
-                    cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
+                    cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.suffix} "
                                 f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
                                 (name, id_uniprot, seq))        
 
@@ -261,13 +261,13 @@ else:
 
     # Views
     cursor.execute(
-        f"CREATE VIEW multiple_status_{args.table} AS SELECT id_uniprot, count(*) AS multiple "
-        f"FROM proteins_cog_{args.table} GROUP BY id_uniprot;")  # Proteins with multiple cogs associated
+        f"CREATE VIEW multiple_status_{args.suffix} AS SELECT id_uniprot, count(*) AS multiple "
+        f"FROM proteins_cog_{args.suffix} GROUP BY id_uniprot;")  # Proteins with multiple cogs associated
     conn.commit()
 
-    cursor.execute(f"CREATE VIEW paralogy_{args.table} AS SELECT id_cog, COUNT(DISTINCT(ncbi_id)) AS strain_count, "
-                   f"count(id_uniprot) as proteins_count FROM proteins_cog_{args.table} NATURAL JOIN "
-                   f"strain_proteins_{args.table} GROUP BY id_cog;")
+    cursor.execute(f"CREATE VIEW paralogy_{args.suffix} AS SELECT id_cog, COUNT(DISTINCT(ncbi_id)) AS strain_count, "
+                   f"count(id_uniprot) as proteins_count FROM proteins_cog_{args.suffix} NATURAL JOIN "
+                   f"strain_proteins_{args.suffix} GROUP BY id_cog;")
     conn.commit()
 
     # strain and protein cog by cog
