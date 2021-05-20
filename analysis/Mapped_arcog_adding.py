@@ -170,8 +170,10 @@ else:
                 print(id_uniprot)
                 # Arcogs retrieval
                 arcogs = []
+                SQ = False
                 seq = ''
                 name = ''
+                firstline = False
                 url_arcog = "https://www.uniprot.org/uniprot/" + id_uniprot + ".txt"
                 Embl_file = uniprot_connection(url_arcog)
                 if Embl_file == '':
@@ -179,22 +181,6 @@ else:
                 else:
                     Embl_file = Embl_file.text.split("\n")         
                     for line_arc in Embl_file:  # file
-                        if line_arc.startswith("DR   eggNOG"):
-                            arcog = line_arc.split("; ")
-                            arcogs.append(arcog[1])
-                        if arcogs:
-                            for el in arcogs:
-                                cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} (id_uniprot, id_cog) "
-                                            f"VALUES (%s,%s)", (id_uniprot, el))
-                            conn.commit()
-                        else:
-                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
-                                        f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
-                            conn.commit()
-
-                            # Instertion for proteins with no cog
-                            # Since NULL is not authorized as primary key, string 'NA' is used
-                        firstline = False
                         if(firstline == False):
                             if line_arc.startswith("OS"):
                                 firstline = True
@@ -212,13 +198,29 @@ else:
                                         else:
                                             name += el
                                 name.strip(" ")
-                                name += "'"    
-                        SQ = False
+                                name += "'"   
                         if SQ == True:
                             seq += line_arc.replace(' ', '').replace('\n', '').replace('//', '')
                         if line_arc.startswith("SQ"):
                             SQ = True
-                
+                        
+                        #arcog retrieval
+                        if line_arc.startswith("DR   eggNOG"):
+                            arcog = line_arc.split("; ")
+                            arcogs.append(arcog[1])
+                    if arcogs:
+                        for el in arcogs:
+                            cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} (id_uniprot, id_cog) "
+                                        f"VALUES (%s,%s)", (id_uniprot, el))
+                        conn.commit()
+                    else:
+                        cursor.execute(f"INSERT IGNORE INTO proteins_cog_{args.table} "
+                                    f"(id_uniprot, id_cog) VALUES (%s,%s)", (id_uniprot, 'NA'))
+                        conn.commit()
+
+                        # Instertion for proteins with no cog
+                        # Since NULL is not authorized as primary key, string 'NA' is used
+                    
                     cursor.execute(f"INSERT IGNORE INTO strain_proteins_{args.table} "
                                 f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
                                 (name, id_uniprot, seq))        
