@@ -59,7 +59,7 @@ else:
     cursor.execute(f"USE {args.database};")
     
     cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS `strain_proteins` (`ncbi_id` VARCHAR(30), `id_uniprot` "
+            f"CREATE TABLE IF NOT EXISTS `strain_proteins` (`ncbi_id` TEXT, `id_uniprot` "
             f"VARCHAR(30), `sequence` TEXT, PRIMARY KEY(`id_uniprot`));")
 
         

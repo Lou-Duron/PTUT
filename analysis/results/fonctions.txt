@@ -1,0 +1,44 @@
+Tous :
+arCOG00553 : DNA-dependent ATPase and 3'-5' DNA helicase that may be involved in repair of stalled replication forks
+arCOG00555 :COG1205 Distinct helicase family with a unique C-terminal domain including a metal-binding cysteine cluster
+arCOG00557 : DEAD DEAH box helicase
+
+Euryachaeota :
+arCOG00554 : DEAD DEAH box helicase
+arCOG01445 : CRISPR-associated helicase, Cas3
+arCOG00558 : Belongs to the DEAD box helicase family
+arCOG00872 : DEAD DEAH box helicase domain protein
+
+Specifiques :
+
+    Halobacteria :
+    23SJE : DEAD DEAH box helicase
+    23S7C : DEAD DEAH box helicase
+    2XTDD : DEAD DEAH box helicase
+    23S0J : COG1111 ERCC4-like helicases
+    23SJ7 : DNA-dependent ATPase and 3'-5' DNA helicase that may be involved in repair of stalled replication forks
+    23SI2 : COG1199 Rad3-related DNA helicases
+
+    Methanomicrobia :
+    2N99K : DEAD DEAH box helicase domain protein
+    2N92E : DEAD DEAH box helicase domain protein
+    2N9AX : DEAD DEAH box helicase domain protein
+    2N91F : PFAM DEAD_2 domain protein
+    2N9EH : TIGRFAM ATP-dependent DNA helicase, RecQ
+    2XW8W : TIGRFAM ATP-dependent DNA helicase, RecQ
+    COG0514 : ATP-dependent DNA helicase (RecQ)
+    2N9A8 : DNA-dependent ATPase and 3'-5' DNA helicase that may be involved in repair of stalled replication forks
+    2N90P : DEAD DEAH box helicase domain protein
+
+    Thermococcaceae:
+    243PF : HELICc2
+    2XTH2 : COG1199 Rad3-related DNA helicases
+    2XTYQ : COG1061 DNA or RNA helicases of superfamily II
+    243HG : helicase superfamily c-terminal domain
+
+    Methanomada group:
+    arCOG03143 : COG1202 Superfamily II helicase, archaea-specific
+
+    Thermoproteales :
+    arCOG00876 : PFAM helicase domain protein
+
