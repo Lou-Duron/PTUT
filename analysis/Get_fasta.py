@@ -15,6 +15,7 @@ parser.add_argument('--host', '-o', type = str, help = "database host")
 parser.add_argument('--name', '-n', type=str, required=False, default='seqtosearch', help='filename')
 parser.add_argument('--all', '-a', required=False, action="store_true", help='get all proteins')
 parser.add_argument('--partial', '-p',required=False, action="store_true", help='get only proteins without arcogs')
+parser.add_argument('--suffix', '-s', type = str, help = "of the table to use")
 args = parser.parse_args()
 ###############################################################################################
 
@@ -35,11 +36,11 @@ else: # if connection succeed
     cursor = conn.cursor()
     
     if args.partial:
-        cursor.execute("SELECT DISTINCT(S.id_uniprot), sequence FROM proteins_cog AS P, strain_proteins AS S WHERE P.id_uniprot = S.id_uniprot AND id_cog = 'NA' AND sequence IS NOT NULL;")
+        cursor.execute(f"SELECT DISTINCT(S.id_uniprot), sequence FROM proteins_cog_{args.suffix} AS P, strain_proteins AS S WHERE P.id_uniprot = S.id_uniprot AND id_cog = 'NA' AND sequence IS NOT NULL;")
         results = cursor.fetchall() 
     
     if args.all:
-        cursor.execute("SELECT DISTINCT(S.id_uniprot), sequence FROM proteins_cog AS P, strain_proteins AS S WHERE P.id_uniprot = S.id_uniprot AND sequence IS NOT NULL;")
+        cursor.execute(f"SELECT DISTINCT(S.id_uniprot), sequence FROM proteins_cog_{args.suffix} AS P, strain_proteins AS S WHERE P.id_uniprot = S.id_uniprot AND sequence IS NOT NULL;")
         results = cursor.fetchall() 
 
     filepath = rootpath / f"analysis/results/{args.name}.fa"
