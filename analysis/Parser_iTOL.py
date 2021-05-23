@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description='Parser_iTOL')
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
 parser.add_argument('--suffix', '-s', type = str, help = "of the table to use")
+parser.add_argument('--all', '-a', required=False, action="store_true", help='get all proteins, even if there is no COG associated')
 args = parser.parse_args()
 ###############################################################################################
 try:
@@ -32,11 +33,18 @@ else:
     cursor.execute(f"USE {args.database}")
     cursor.execute(f"SELECT id_cog, ncbi_id FROM proteins_cog_{args.suffix} p, "
                    f"strain_proteins s WHERE p.id_uniprot = s.id_uniprot")
-    for el in cursor:
-        if el[0]!="NA":
+    
+    if args.all:
+        for el in cursor:
             if el[1] not in dico.keys():
                 dico[el[1]]=[]
             dico[el[1]].append(el[0])
+    else :
+        for el in cursor:
+            if el[0]!="NA":
+                if el[1] not in dico.keys():
+                    dico[el[1]]=[]
+                dico[el[1]].append(el[0])
 
     for species in dico.keys():
         for arcog in dico[species]:

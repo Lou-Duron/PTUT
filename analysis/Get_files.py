@@ -6,12 +6,11 @@ from configurations import config
 import argparse
 from pathlib import Path
 
-
 ################################################################################################
 parser = argparse.ArgumentParser(description='View') 
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
-parser.add_argument('--name', '-n', type = str, required=False, help = "name of the table required")
+parser.add_argument('--name', '-n', type = str, required=False, help = "name of the table required, all of them if not precised")
 args = parser.parse_args()
 ###############################################################################################
 
