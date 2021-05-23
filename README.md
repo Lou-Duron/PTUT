@@ -18,7 +18,7 @@ mysql.connector library may require configuration of an environment to solve lib
 - Create conda environment 
 - Create configurations/congig.py contains username and password of mysql user to connect with
 
-:warning: **USERNAME AND PASSWORD ARE NOT ENCRYPTED AND WILL BE STORED IN CLEAR TEXT BUT WILL NOT BE ACCESSIBLE FROM GITLAB** :warning:
+:warning: **USERNAME AND PASSWORD ARE NOT ENCRYPTED AND WILL BE STORED IN CLEAR TEXT. BUT DON'T WORRY, THEY WILL NOT BE ACCESSIBLE FROM GITLAB** :warning:
 
 ## mysql.connector
 
@@ -86,7 +86,7 @@ Obsolete id_uniprot are written in `analysis/results/obsolete.txt`
 - Be careful while using drop, as it will delete all the tables which are created under the name of the argument --suffix. 
 - If the argument --suffix designate a table that already exists, this table will be updated. 
 
-![Untitled](uploads/562a75f1805201befa8ff1e028a43699/Untitled.png)
+![Untitled](Database_scheme.png)
 
 ## analysis/Get_info.py
 After database creation, this script gives some basic information.
@@ -128,7 +128,7 @@ Example of use :
 ./Get_file.py -b helicases -o localhost -proteins_cog_asgard
 ```
 
-**Note : ** The files are available in ../data/tables
+**Note :** The files are available in ../data/tables
 
 
 # Eggnog Mapper results
@@ -162,7 +162,7 @@ Note: You can use the online version of eggnog mapper [here](http://eggnog-mappe
 -  Submit your request (it doesn't run it without mail confirmation)
 -  You will receive an email with the command line at the bottom
 
-*Known issues :*
+**Known issues :**
 - copy paste may not work for "-" and "__" 
 - You may of issues during execution because of block storage parameter, check the argument `--block_size`.
 
