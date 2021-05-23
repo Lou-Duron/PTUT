@@ -102,11 +102,11 @@ else:
                     SQ = False
                     seq = ''
                     name = ''
-                    Embl_file = uniprot_connection(url).text
+                    Embl_file = uniprot_connection(url)
                     if Embl_file == '':
                         obsolete.append(id_uniprot)
                     else:
-                        Embl_file = Embl_file.split("\n")         
+                        Embl_file = Embl_file.text.split("\n")         
                         for line_arc in Embl_file: #file
                             if(firstline == False):
                                 if line_arc.startswith("OS"):
@@ -202,12 +202,11 @@ else:
                 name = ''
                 firstline = False
                 url_arcog = "https://www.uniprot.org/uniprot/" + id_uniprot + ".txt"
-                Embl_file = uniprot_connection(url_arcog).text
+                Embl_file = uniprot_connection(url_arcog)
                 if Embl_file == '':
-                    print(id_uniprot)
                     obsolete.append(id_uniprot)
                 else:
-                    Embl_file = Embl_file.split("\n")         
+                    Embl_file = Embl_file.text.split("\n")         
                     for line_arc in Embl_file:  # file
                         if(firstline == False):
                             if line_arc.startswith("OS"):
@@ -253,10 +252,8 @@ else:
                                 f"(ncbi_id, id_uniprot, sequence) VALUES (%s,%s,%s)",
                                 (name, id_uniprot, seq))        
 
-        
         print("\nData recovery finished !")
         print("Please wait while the tables are created")
-        
         obsolete_path = rootpath / f"analysis/results/{args.name}.txt"
         obsolete_file = open(obsolete_path, "w")
         for proteins in obsolete:
@@ -298,3 +295,5 @@ else:
     if conn.is_connected():
         cursor.close()  # close cursor
         conn.close()  # close connection
+
+

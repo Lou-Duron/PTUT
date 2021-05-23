@@ -10,7 +10,7 @@ from pathlib import Path
 parser = argparse.ArgumentParser(description='View') 
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
-parser.add_argument('--name', '-n', type = str, required=False, help = "name of the table required, all of them if not precised")
+parser.add_argument('--table', '-t', type = str, required=False, help = "name of the table required, all of them if not precised")
 args = parser.parse_args()
 ###############################################################################################
 
@@ -28,13 +28,13 @@ else:
     cursor = conn.cursor()
     cursor.execute(f"USE {args.database}")
 
-    if args.name is not None :
-        with open(path / f"{args.name}.tsv", "w") as tsv:
+    if args.table is not None :
+        with open(path / f"{args.table}.tsv", "w") as tsv:
             nb_atribute = 0
-            cursor.execute(f"DESCRIBE {args.name}")
+            cursor.execute(f"DESCRIBE {args.table}")
             for el in cursor:
                 nb_atribute += 1
-            cursor.execute(f"SELECT * FROM {args.name}")
+            cursor.execute(f"SELECT * FROM {args.table}")
             for el in cursor:
                 for i in range(nb_atribute):
                     tsv.write(f"{el[i]}\t")
