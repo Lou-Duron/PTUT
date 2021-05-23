@@ -8,7 +8,7 @@ import argparse
 from pathlib import Path
 
 ################################################################################################
-parser = argparse.ArgumentParser(description='Parser_iTOL') 
+parser = argparse.ArgumentParser(description='Parser_iTOL, creates two files for results visualization') 
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
 parser.add_argument('--suffix', '-s', type = str, help = "of the table to use")
@@ -27,7 +27,7 @@ else:
     rootpath = Path(__file__).resolve().parent.parent
     path = rootpath / "analysis/Visualization"
     cursor = conn.cursor()
-    dico = {} # {species : [arcogs]}
+    dico = {} # {species : [cogs]}
     values = []
     colors = []
     cursor.execute(f"USE {args.database}")

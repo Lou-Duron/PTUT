@@ -12,13 +12,13 @@ import time
 
 
 ################################################################################################
-parser = argparse.ArgumentParser(description='Add mapped arcogs to database and remove previous results')
+parser = argparse.ArgumentParser(description='Add mapped COGs to database and remove previous results')
 parser.add_argument('--database', '-b', type=str, help="database to connect to")
 parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
-parser.add_argument('--arcogs', '-a', type=str, required=False, help="tsv file with id_cogs descriptions and type from "
+parser.add_argument('--cogs', '-c', type=str, required=False, help="tsv file with id_cogs descriptions and type from "
                                                                      "eggnog")
 parser.add_argument('--suffix', '-s',  type=str, required=True, help="the name you want to give to your table")
-parser.add_argument('--mapper', '-m', type=str, required=False, help="your arcog file from the eggnog mapper")
+parser.add_argument('--mapper', '-m', type=str, required=False, help="annotation file from the eggnog mapper")
 parser.add_argument('--helicasefile', '-f', type=str, required=False,
                     help="tsv file with CGBD id associated to uniprot protein id ")
 parser.add_argument('--drop', '-d', required=False, action="store_true", help='drop all tables')
@@ -262,11 +262,11 @@ else:
 
         conn.commit()
 
-    if args.arcogs is not None:
+    if args.cogs is not None:
         cursor.execute(f"DROP TABLE IF EXISTS `cog`;")
         cursor.execute("CREATE TABLE IF NOT EXISTS `cog`(`id_cog` VARCHAR(30) UNIQUE, `category` VARCHAR(100), "
                        "`description` TEXT, PRIMARY KEY(`id_cog`));")
-        with open(args.arcogs, "r") as fa:  # Reading of cog description
+        with open(args.cogs, "r") as fa:  # Reading of cog description
             tsv_arcogs = csv.reader(fa, delimiter="\t")
             for line in tsv_arcogs:
                 if line[3] == "":

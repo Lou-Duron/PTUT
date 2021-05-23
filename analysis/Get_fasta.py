@@ -14,7 +14,7 @@ parser.add_argument('--database', '-b', type = str, help = "database to connect 
 parser.add_argument('--host', '-o', type = str, help = "database host")
 parser.add_argument('--name', '-n', type=str, required=False, default='seqtosearch', help='filename')
 parser.add_argument('--all', '-a', required=False, action="store_true", help='get all proteins')
-parser.add_argument('--partial', '-p',required=False, action="store_true", help='get only proteins without arcogs')
+parser.add_argument('--partial', '-p',required=False, action="store_true", help='get only proteins without COGs')
 parser.add_argument('--suffix', '-s', type = str, help = "of the table to use")
 args = parser.parse_args()
 ###############################################################################################

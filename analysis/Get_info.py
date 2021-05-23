@@ -10,15 +10,14 @@ import re
 
 rootpath = Path(__file__).resolve().parent.parent #Get root path of project
 
-
 ################################################################################################
-parser = argparse.ArgumentParser(description='Database Creation')
+parser = argparse.ArgumentParser(description='Verification of database creation')
 parser.add_argument('--host', '-o', type=str, help="host connection")
 parser.add_argument('--database', '-b', type=str, required=True, help="database to connect to")
 parser.add_argument('--helicasefile', '-f', type=str, required=False,
                     help="tsv file with CGBD id associated to uniprot protein id ")
-parser.add_argument('--mapper', '-m', type=str, required=False, help="your arcog file from the eggnog mapper")
-parser.add_argument('--arcogs', '-a', type=str, required=True, help = "tsv file with id_cogs descriptions and type")
+parser.add_argument('--mapper', '-m', type=str, required=False, help="annotation file from the eggnog mapper")
+parser.add_argument('--cogs', '-c', type=str, required=True, help = "tsv file with id_cogs descriptions and type")
 parser.add_argument('--suffix', '-s',  type=str, required=True, help="the table you want to test")
 parser.add_argument('--multiple', '-u', type=str, required=False, default='multiple_status', help='filename for multiple status proteins')
 parser.add_argument('--name', '-n', type=str, required=False, default='obsolete',
@@ -64,7 +63,7 @@ else:  # if connexion is open
         # Test proteins number in the database that have an associated cog
         cursor.execute(f"SELECT DISTINCT id_uniprot FROM proteins_cog_{args.suffix}  WHERE id_cog != 'NA';")
         proteins_cog_table = cursor.fetchall()
-        print("Number of proteins in the database that have been associated to one or multiple arcog : ",
+        print("Number of proteins in the database that have been associated to one or multiple COG : ",
               len(proteins_cog_table))
 
         # Test proteins number in the database that doesn't have an associated cog
@@ -89,7 +88,7 @@ else:  # if connexion is open
         # Test proteins number in the database that have an associated cog
         cursor.execute(f"SELECT DISTINCT id_uniprot FROM proteins_cog_{args.suffix}  WHERE id_cog != 'NA';")
         proteins_cog_table = cursor.fetchall()
-        print("Number of proteins in the database that have been associated to one or multiple arcog : ",
+        print("Number of proteins in the database that have been associated to one or multiple COG : ",
               len(proteins_cog_table))
 
         # Test proteins number in the database that doesn't have an associated cog
@@ -133,7 +132,7 @@ else:  # if connexion is open
     cursor.execute(f"SELECT count(category) FROM cog WHERE category = 'S' AND id_cog IN (SELECT id_cog FROM proteins_cog_{args.suffix}"
                    f" WHERE id_cog != 'NA');")
     result_type_S = cursor.fetchall()
-    print("Number of proteins which are associated with a type S arcog : ", result_type_S[0][0])
+    print("Number of proteins which are associated with a type S COG : ", result_type_S[0][0])
 
     # Test number of unique COG in our database
     cursor.execute(f"SELECT COUNT(DISTINCT id_cog) FROM proteins_cog_{args.suffix};")
@@ -143,20 +142,20 @@ else:  # if connexion is open
     print("\nAnnotations file")
 
     # Test number of arcogs in the annotation file
-    if args.arcogs:
-        with open(args.arcogs, "r") as fh:
+    if args.cogs:
+        with open(args.cogs, "r") as fh:
             arcogs_file_count = 0
             for line in fh:
                 arcogs_file_count += 1
-            print("Number of arcogs in the annotation file : ", arcogs_file_count)
+            print("Number of COGs in the annotation file : ", arcogs_file_count)
 
         # Test number of arcogs in the database
         cursor.execute(f"SELECT id_cog FROM cog")
         arcogs_table = cursor.fetchall()
-        print("Number of arcogs in the table cog : ", len(arcogs_table))
+        print("Number of COGs in the table cog : ", len(arcogs_table))
 
         # Test if there's the same amount of arcogs in the database and in the annotation file
-        print("Number of arcogs in database equals to arcogs in file", arcogs_file_count == len(arcogs_table))
+        print("Number of COGs in database equals to COGs in file", arcogs_file_count == len(arcogs_table))
 
     cursor.close()
     conn.commit()

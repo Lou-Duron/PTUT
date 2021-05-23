@@ -7,7 +7,7 @@ import argparse
 from pathlib import Path
 
 ################################################################################################
-parser = argparse.ArgumentParser(description='View') 
+parser = argparse.ArgumentParser(description='View that combine two table/view') 
 parser.add_argument('--database', '-b', type = str, help = "database to connect to")
 parser.add_argument('--host', '-o', type=str, required=False, help="type of database host, localhost by default")
 parser.add_argument('--table', '-t', type = str, required=False, help = "name of the table required, all of them if not precised")
@@ -55,5 +55,7 @@ else:
                     for i in range(nb_atribute):
                         tsv.write(f"{y[i]}\t")
                     tsv.write("\n")
+                    
+    print("Done : .tsv files available in data/tables")
                     
     
