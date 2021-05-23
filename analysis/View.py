@@ -64,6 +64,7 @@ else:
     
 
     # Infos
+    print(f"\n{request}\n")
     cursor.execute(f"SELECT id_uniprot, id_cog FROM proteins_cog_{args.name}")
     id_uniprot = []
     id_cog = []

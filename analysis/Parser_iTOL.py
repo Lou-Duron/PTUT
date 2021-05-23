@@ -92,4 +92,3 @@ else:
     print("Done : ")
     print(f"NCBI_tree_{args.suffix}.txt created")
     print(f"iTOL_annotation_{args.suffix}.txt created")
-
