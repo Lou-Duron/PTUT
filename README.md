@@ -1,5 +1,5 @@
 # WELCOME TO THE HELICASE PROJECT!
-## The aim of this project is to classify archeal helicases on orthologs groups by arcogs labelling.
+## The aim of this project is to classify archeal helicases on orthologs groups by COGs labelling.
 
 ### [Documentation](https://gitlab.com/spapais/ptut_helicases/-/wikis/home)
 
